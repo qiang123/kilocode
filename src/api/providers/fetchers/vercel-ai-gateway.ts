@@ -1,5 +1,5 @@
 import axios from "axios"
-import { z } from "zod"
+import * as z from "zod"
 
 import type { ModelInfo } from "@roo-code/types"
 import { VERCEL_AI_GATEWAY_VISION_ONLY_MODELS, VERCEL_AI_GATEWAY_VISION_AND_TOOLS_MODELS } from "@roo-code/types"

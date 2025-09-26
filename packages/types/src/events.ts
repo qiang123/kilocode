@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 
 import { clineMessageSchema, tokenUsageSchema } from "./message.js"
 import { toolNamesSchema, toolUsageSchema } from "./tool.js"

@@ -1,5 +1,5 @@
 import axios from "axios"
-import { z } from "zod"
+import * as z from "zod"
 import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { toRequestyServiceUrl } from "@roo/utils/requesty"
 

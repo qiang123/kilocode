@@ -1,5 +1,5 @@
 import axios from "axios"
-import { z } from "zod"
+import * as z from "zod"
 import type { ModelInfo } from "@roo-code/types"
 import {
 	HUGGINGFACE_API_URL,

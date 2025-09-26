@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 
 import { type TaskEvent, taskEventSchema } from "./events.js"
 import { rooCodeSettingsSchema } from "./global-settings.js"

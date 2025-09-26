@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 
 import { modelInfoSchema, reasoningEffortWithMinimalSchema, verbosityLevelsSchema, serviceTierSchema } from "./model.js"
 import { codebaseIndexProviderSchema } from "./codebase-index.js"

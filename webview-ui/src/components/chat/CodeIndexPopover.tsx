@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { Trans } from "react-i18next"
-import { z } from "zod"
+import * as z from "zod"
 import {
 	VSCodeButton,
 	VSCodeTextField,
@@ -435,7 +435,7 @@ export const CodeIndexPopover: React.FC<CodeIndexPopoverProps> = ({
 		} catch (error) {
 			if (error instanceof z.ZodError) {
 				const errors: Record<string, string> = {}
-				error.errors.forEach((err) => {
+				error.issues.forEach((err) => {
 					if (err.path[0]) {
 						errors[err.path[0] as string] = err.message
 					}

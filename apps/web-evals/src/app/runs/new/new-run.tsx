@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { z } from "zod"
+import * as z from "zod"
 import { useQuery } from "@tanstack/react-query"
 import { useForm, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"

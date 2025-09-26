@@ -1,7 +1,7 @@
 import { openRouterDefaultModelId, type ProviderSettings } from "@roo-code/types"
 import { getKiloBaseUriFromToken } from "../../../shared/kilocode/token"
 import { TelemetryService } from "@roo-code/telemetry"
-import { z } from "zod"
+import * as z from "zod"
 import { fetchWithTimeout } from "./fetchWithTimeout"
 import { DEFAULT_HEADERS } from "../constants"
 

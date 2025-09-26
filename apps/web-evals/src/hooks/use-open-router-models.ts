@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 import { useQuery } from "@tanstack/react-query"
 
 export const openRouterModelSchema = z.object({

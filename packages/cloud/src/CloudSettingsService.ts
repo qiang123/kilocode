@@ -2,7 +2,7 @@ import EventEmitter from "events"
 
 import type { ExtensionContext } from "vscode"
 
-import { z } from "zod"
+import * as z from "zod"
 
 import {
 	type SettingsService,

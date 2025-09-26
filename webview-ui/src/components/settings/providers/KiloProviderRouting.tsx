@@ -7,7 +7,7 @@ import {
 
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from "@src/components/ui"
-import { z } from "zod"
+import * as z from "zod"
 import { safeJsonParse } from "@roo/safeJsonParse"
 import { useModelProviders } from "@/components/ui/hooks/useSelectedModel"
 import { cn } from "@/lib/utils"
@@ -90,13 +90,13 @@ export const KiloProviderRouting = ({ apiConfiguration, setApiConfigurationField
 					<ProviderSelectItem value={{ type: "default" }}>
 						{t("kilocode:settings.provider.providerRouting.sorting.default")}
 					</ProviderSelectItem>
-					<ProviderSelectItem value={{ type: openRouterProviderSortSchema.Values.price }}>
+					<ProviderSelectItem value={{ type: openRouterProviderSortSchema.enum.price }}>
 						{t("kilocode:settings.provider.providerRouting.sorting.price")}
 					</ProviderSelectItem>
-					<ProviderSelectItem value={{ type: openRouterProviderSortSchema.Values.throughput }}>
+					<ProviderSelectItem value={{ type: openRouterProviderSortSchema.enum.throughput }}>
 						{t("kilocode:settings.provider.providerRouting.sorting.throughput")}
 					</ProviderSelectItem>
-					<ProviderSelectItem value={{ type: openRouterProviderSortSchema.Values.latency }}>
+					<ProviderSelectItem value={{ type: openRouterProviderSortSchema.enum.latency }}>
 						{t("kilocode:settings.provider.providerRouting.sorting.latency")}
 					</ProviderSelectItem>
 					<SelectSeparator />
@@ -129,10 +129,10 @@ export const KiloProviderRouting = ({ apiConfiguration, setApiConfigurationField
 					<SelectItem value="default">
 						{t("kilocode:settings.provider.providerRouting.dataCollection.default")}
 					</SelectItem>
-					<SelectItem value={openRouterProviderDataCollectionSchema.Values.allow}>
+					<SelectItem value={openRouterProviderDataCollectionSchema.enum.allow}>
 						{t("kilocode:settings.provider.providerRouting.dataCollection.allow")}
 					</SelectItem>
-					<SelectItem value={openRouterProviderDataCollectionSchema.Values.deny}>
+					<SelectItem value={openRouterProviderDataCollectionSchema.enum.deny}>
 						{t("kilocode:settings.provider.providerRouting.dataCollection.deny")}
 					</SelectItem>
 				</SelectContent>

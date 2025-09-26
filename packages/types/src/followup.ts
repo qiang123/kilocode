@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 
 /**
  * Interface for follow-up data structure used in follow-up questions

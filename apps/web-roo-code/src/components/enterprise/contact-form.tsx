@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { z } from "zod"
+import * as z from "zod"
 
 import {
 	Button,

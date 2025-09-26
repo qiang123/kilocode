@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 
 import { providerNames } from "./provider-settings.js"
 import { clineMessageSchema } from "./message.js"

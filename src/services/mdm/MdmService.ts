@@ -1,7 +1,7 @@
 import * as fs from "fs"
 import * as path from "path"
 import * as os from "os"
-import { z } from "zod"
+import * as z from "zod"
 
 import { CloudService, getClerkBaseUrl, PRODUCTION_CLERK_BASE_URL } from "@roo-code/cloud"
 

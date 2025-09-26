@@ -16,7 +16,7 @@ import deepEqual from "fast-deep-equal"
 import * as fs from "fs/promises"
 import * as path from "path"
 import * as vscode from "vscode"
-import { z } from "zod"
+import * as z from "zod"
 import { t } from "../../i18n"
 
 import { ClineProvider } from "../../core/webview/ClineProvider"

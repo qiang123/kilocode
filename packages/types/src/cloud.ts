@@ -1,6 +1,6 @@
 import EventEmitter from "events"
 
-import { z } from "zod"
+import * as z from "zod"
 
 import { RooCodeEventName } from "./events.js"
 import { TaskStatus, taskMetadataSchema } from "./task.js"
@@ -78,6 +78,7 @@ export interface CloudOrganizationMembership {
 export const organizationAllowListSchema = z.object({
 	allowAll: z.boolean(),
 	providers: z.record(
+		z.string(),
 		z.object({
 			allowAll: z.boolean(),
 			models: z.array(z.string()).optional(),

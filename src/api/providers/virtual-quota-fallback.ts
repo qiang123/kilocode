@@ -1,6 +1,6 @@
 // kilocode_change - new file
 import { Anthropic } from "@anthropic-ai/sdk"
-import { z } from "zod"
+import * as z from "zod"
 import * as vscode from "vscode"
 import type { ModelInfo, ProviderSettings } from "@roo-code/types"
 import { ProviderSettingsManager } from "../../core/config/ProviderSettingsManager"

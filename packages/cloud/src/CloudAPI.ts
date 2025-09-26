@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod"
 
 import { type AuthService, type ShareVisibility, type ShareResponse, shareResponseSchema } from "@roo-code/types"
 

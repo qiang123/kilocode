@@ -51,6 +51,7 @@ import {
 	cerebrasDefaultModelId,
 	ovhCloudAiEndpointsDefaultModelId, // kilocode_change
 	codebuffDefaultModelId,
+	codebuffModels,
 } from "@roo-code/types"
 import type { ModelRecord, RouterModels } from "@roo/api"
 import { useRouterModels } from "../../ui/hooks/useRouterModels"
@@ -211,6 +212,14 @@ export const getModelsByProvider = ({
 				defaultModel: qwenCodeDefaultModelId,
 			}
 		}
+
+		case "codebuff": {
+			return {
+				models: codebuffModels,
+				defaultModel: codebuffDefaultModelId,
+			}
+		}
+
 		case "gemini-cli": {
 			return {
 				models: geminiCliModels,

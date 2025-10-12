@@ -11,7 +11,7 @@ import { useExtensionState } from "@src/context/ExtensionStateContext"
 import { useAppTranslation } from "@src/i18n/TranslationContext"
 import { Button } from "@src/components/ui"
 
-import { inputEventTransform } from "../transforms"
+import { inputEventTransform, checkEventTransform } from "../transforms"
 import { ModelPicker } from "../ModelPicker"
 
 type CodebuffProps = {
@@ -72,6 +72,17 @@ export const Codebuff = ({
 		[setApiConfigurationField],
 	)
 
+	const handleChange = useCallback(
+		<K extends keyof ProviderSettings, E>(
+			field: K,
+			transform: (event: E) => ProviderSettings[K] = checkEventTransform,
+		) =>
+			(event: E | Event) => {
+				setApiConfigurationField(field, transform(event as E))
+			},
+		[setApiConfigurationField],
+	)
+
 	const handleRefreshModels = useCallback(() => {
 		codebuffErrorJustReceived.current = false // Reset flag on new refresh action
 		setRefreshStatus("loading")
@@ -107,6 +118,12 @@ export const Codebuff = ({
 				className="w-full">
 				<label className="block font-medium mb-1">{t("settings:providers.codebuffApiKey")}</label>
 			</VSCodeTextField>
+
+			<VSCodeCheckbox
+				checked={apiConfiguration?.useCodebuffSdk || true}
+				onChange={handleChange("useCodebuffSdk")}>
+				<span className="font-medium">Codebuff Enabled</span>
+			</VSCodeCheckbox>
 
 			<div className="text-sm text-vscode-descriptionForeground -mt-2">
 				{t("settings:providers.apiKeyStorageNotice")}

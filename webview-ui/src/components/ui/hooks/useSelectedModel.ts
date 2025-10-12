@@ -65,6 +65,7 @@ import {
 	deepInfraDefaultModelId,
 	ovhCloudAiEndpointsDefaultModelId, // kilocode_change
 	codebuffDefaultModelId,
+	codebuffModels,
 } from "@roo-code/types"
 
 import type { ModelRecord, RouterModels } from "@roo/api"
@@ -199,7 +200,7 @@ function getSelectedModel({
 		}
 		case "codebuff": {
 			const id = apiConfiguration.codebuffAgentId ?? codebuffDefaultModelId
-			const info = routerModels.codebuff[id]
+			const info = codebuffModels[id as keyof typeof codebuffModels]
 			return { id, info }
 		}
 		case "deepinfra": {

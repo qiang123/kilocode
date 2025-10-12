@@ -93,6 +93,7 @@ export const PROVIDERS = [
 	{ value: "synthetic", label: "Synthetic" }, // kilocode_change
 	{ value: "featherless", label: "Featherless AI" },
 	{ value: "io-intelligence", label: "IO Intelligence" },
+	{ value: "codebuff", label: "Codebuff" },
 	// kilocode_change start
 	// { value: "roo", label: "Roo Code Cloud" },
 	// kilocode_change end

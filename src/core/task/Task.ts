@@ -10,7 +10,8 @@ import pWaitFor from "p-wait-for"
 import { serializeError } from "serialize-error"
 
 // kilocode_change: Import Codebuff SDK
-import type { CodebuffClient, RunState, PrintModeEvent } from "../../../../sdk/src/index"
+import { CodebuffClient } from "../../../../sdk/src/index"
+import type { RunState, PrintModeEvent } from "../../../../sdk/src/index"
 import { getAllCodebuffTools, type ToolExecutionContext } from "../tools/codebuff-tool-converter"
 
 import {
@@ -317,7 +318,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	// kilocode_change: Codebuff SDK integration
 	private codebuffClient?: CodebuffClient
 	private codebuffRunState?: RunState
-	private useCodebuffSdk: boolean = false
+	private useCodebuffSdk: boolean = true
 
 	constructor({
 		context, // kilocode_change
@@ -460,9 +461,14 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 	// kilocode_change start: Codebuff SDK initialization
 	private initializeCodebuffSdk(apiConfiguration: ProviderSettings): void {
+		const provider = this.providerRef.deref()
+		process.env.NEXT_PUBLIC_CB_ENVIRONMENT = "dev"
+		provider?.log(`initialize codebuf client: ${apiConfiguration.codebuffApiKey}`)
 		// Check if we should use Codebuff SDK based on configuration
 		// This could be controlled by a setting or environment variable
-		const useCodebuff = process.env.USE_CODEBUFF_SDK === "true" || (apiConfiguration as any).useCodebuffSdk === true
+		// const useCodebuff = process.env.USE_CODEBUFF_SDK === "true" || (apiConfiguration as any).useCodebuffSdk === true
+
+		const useCodebuff = true
 
 		if (useCodebuff) {
 			try {
@@ -474,12 +480,16 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						handleEvent: this.handleCodebuffEvent.bind(this),
 					})
 					this.useCodebuffSdk = true
+					provider?.log("[Task] Codebuff SDK initialized successfully")
 					console.log("[Task] Codebuff SDK initialized successfully")
 				} else {
+					provider?.log("[Task] Codebuff SDK enabled but no API key found")
 					console.warn("[Task] Codebuff SDK enabled but no API key found")
 				}
 			} catch (error) {
+				provider?.log(`[Task] Failed to initialize Codebuff SDK:${error}`)
 				console.error("[Task] Failed to initialize Codebuff SDK:", error)
+
 				this.useCodebuffSdk = false
 			}
 		}
@@ -3147,7 +3157,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			await this.say("text", "Using Codebuff SDK for enhanced task handling...")
 
 			const runResult = await this.codebuffClient.run({
-				agent: mode || "base",
+				agent: this.apiConfiguration.codebuffAgentId || mode || "base",
 				prompt: prompt,
 				previousRun: this.codebuffRunState,
 				projectFiles,

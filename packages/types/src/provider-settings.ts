@@ -523,6 +523,7 @@ export const providerSettingsSchemaDiscriminated = z.discriminatedUnion("apiProv
 	kilocodeSchema.merge(z.object({ apiProvider: z.literal("kilocode") })),
 	virtualQuotaFallbackSchema.merge(z.object({ apiProvider: z.literal("virtual-quota-fallback") })),
 	syntheticSchema.merge(z.object({ apiProvider: z.literal("synthetic") })),
+	codebuffSchema.merge(z.object({ apiProvider: z.literal("codebuff") })),
 	// kilocode_change end
 	groqSchema.merge(z.object({ apiProvider: z.literal("groq") })),
 	huggingFaceSchema.merge(z.object({ apiProvider: z.literal("huggingface") })),

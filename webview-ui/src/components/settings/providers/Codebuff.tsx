@@ -1,7 +1,12 @@
 import { useCallback, useState, useEffect, useRef } from "react"
 import { VSCodeTextField, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
 
-import { type ProviderSettings, type OrganizationAllowList, codebuffDefaultModelId } from "@roo-code/types"
+import {
+	type ProviderSettings,
+	type OrganizationAllowList,
+	codebuffDefaultModelId,
+	codebuffModels,
+} from "@roo-code/types"
 
 import { RouterName } from "@roo/api"
 import { ExtensionMessage } from "@roo/ExtensionMessage"
@@ -161,8 +166,8 @@ export const Codebuff = ({
 			<ModelPicker
 				apiConfiguration={apiConfiguration}
 				defaultModelId={codebuffDefaultModelId}
-				models={routerModels?.codebuff ?? {}}
-				modelIdKey="codebuffAgentId"
+				models={codebuffModels}
+				modelIdKey="codebuffModelId"
 				serviceName="Codebuff"
 				serviceUrl="http://localhost:3000/"
 				setApiConfigurationField={setApiConfigurationField}
@@ -172,7 +177,7 @@ export const Codebuff = ({
 
 			{/* Show prompt caching option if the selected model supports it */}
 			{(() => {
-				const selectedModelId = apiConfiguration.codebuffAgentId || codebuffDefaultModelId
+				const selectedModelId = apiConfiguration.codebuffModelId || codebuffDefaultModelId
 				const selectedModel = routerModels?.codebuff?.[selectedModelId]
 				if (selectedModel?.supportsPromptCache) {
 					return (

@@ -199,7 +199,7 @@ function getSelectedModel({
 			return { id, info }
 		}
 		case "codebuff": {
-			const id = apiConfiguration.codebuffAgentId ?? codebuffDefaultModelId
+			const id = apiConfiguration.codebuffModelId ?? codebuffDefaultModelId
 			const info = codebuffModels[id as keyof typeof codebuffModels]
 			return { id, info }
 		}

@@ -40,6 +40,7 @@ import {
 	isInteractiveAsk,
 	isResumableAsk,
 	QueuedMessage,
+	codebuffDefaultModelId,
 } from "@roo-code/types"
 import { TelemetryService } from "@roo-code/telemetry"
 import { CloudService, BridgeOrchestrator } from "@roo-code/cloud"
@@ -3154,10 +3155,13 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			const customToolDefinitions = getAllCodebuffTools(toolContext)
 
 			// Run Codebuff agent
-			await this.say("text", "Using Codebuff SDK for enhanced task handling...")
+			await this.say(
+				"text",
+				`Using Codebuff Agent[${this.apiConfiguration.codebuffModelId}] for enhanced task handling...`,
+			)
 
 			const runResult = await this.codebuffClient.run({
-				agent: this.apiConfiguration.codebuffAgentId || mode || "base",
+				agent: this.apiConfiguration.codebuffModelId || codebuffDefaultModelId || "base",
 				prompt: prompt,
 				previousRun: this.codebuffRunState,
 				projectFiles,

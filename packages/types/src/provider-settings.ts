@@ -304,7 +304,7 @@ const lmStudioSchema = baseProviderSettingsSchema.extend({
 })
 
 const codebuffSchema = baseProviderSettingsSchema.extend({
-	codebuffAgentId: z.string().optional(),
+	codebuffModelId: z.string().optional(),
 	codebuffApiKey: z.string().optional(),
 	codebuffBaseUrl: z.string().optional(),
 	useCodebuffSdk: z.boolean().optional(),
@@ -622,7 +622,7 @@ export const modelIdKeys = [
 	"deepInfraModelId",
 	"kilocodeModel",
 	"ovhCloudAiEndpointsModelId", // kilocode_change
-	"codebuffAgentId",
+	"codebuffModelId",
 ] as const satisfies readonly (keyof ProviderSettings)[]
 
 export type ModelIdKey = (typeof modelIdKeys)[number]
@@ -679,7 +679,7 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	kilocode: "kilocodeModel",
 	"virtual-quota-fallback": "apiModelId",
 	ovhcloud: "ovhCloudAiEndpointsModelId", // kilocode_change
-	codebuff: "codebuffAgentId",
+	codebuff: "codebuffModelId",
 }
 
 /**

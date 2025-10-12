@@ -18,7 +18,7 @@ export const getModelIdKey = ({
 	| "vsCodeLmModelSelector"
 	| "ovhCloudAiEndpointsModelId" // kilocode_change
 	| "apiModelId"
-	| "codebuffAgentId"
+	| "codebuffModelId"
 > => {
 	switch (provider) {
 		case "openrouter": {
@@ -56,7 +56,7 @@ export const getModelIdKey = ({
 			return "ovhCloudAiEndpointsModelId"
 		}
 		case "codebuff": {
-			return "codebuffAgentId"
+			return "codebuffModelId"
 		}
 		// kilocode_change end
 		default: {

@@ -135,6 +135,16 @@ export const organizationCloudSettingsSchema = z.object({
 export type OrganizationCloudSettings = z.infer<typeof organizationCloudSettingsSchema>
 
 /**
+ * OrganizationFeatures
+ */
+
+export const organizationFeaturesSchema = z.object({
+	roomoteControlEnabled: z.boolean().optional(),
+})
+
+export type OrganizationFeatures = z.infer<typeof organizationFeaturesSchema>
+
+/**
  * OrganizationSettings
  */
 
@@ -143,6 +153,7 @@ export const organizationSettingsSchema = z.object({
 	cloudSettings: organizationCloudSettingsSchema.optional(),
 	defaultSettings: organizationDefaultSettingsSchema,
 	allowList: organizationAllowListSchema,
+	features: organizationFeaturesSchema.optional(),
 	hiddenMcps: z.array(z.string()).optional(),
 	hideMarketplaceMcps: z.boolean().optional(),
 	mcps: z.array(mcpMarketplaceItemSchema).optional(),
@@ -229,9 +240,10 @@ export interface AuthService extends EventEmitter<AuthServiceEvents> {
 	broadcast(): void
 
 	// Authentication methods
-	login(): Promise<void>
+	login(landingPageSlug?: string): Promise<void>
 	logout(): Promise<void>
 	handleCallback(code: string | null, state: string | null, organizationId?: string | null): Promise<void>
+	switchOrganization(organizationId: string | null): Promise<void>
 
 	// State methods
 	getState(): AuthState
@@ -243,6 +255,9 @@ export interface AuthService extends EventEmitter<AuthServiceEvents> {
 	getSessionToken(): string | undefined
 	getUserInfo(): CloudUserInfo | null
 	getStoredOrganizationId(): string | null
+
+	// Organization management
+	getOrganizationMemberships(): Promise<CloudOrganizationMembership[]>
 }
 
 /**
@@ -707,3 +722,25 @@ export type LeaveResponse = {
 	taskId?: string
 	timestamp?: string
 }
+
+/**
+ * UsageStats
+ */
+
+export const usageStatsSchema = z.object({
+	success: z.boolean(),
+	data: z.object({
+		dates: z.array(z.string()), // Array of date strings
+		tasks: z.array(z.number()), // Array of task counts
+		tokens: z.array(z.number()), // Array of token counts
+		costs: z.array(z.number()), // Array of costs in USD
+		totals: z.object({
+			tasks: z.number(),
+			tokens: z.number(),
+			cost: z.number(), // Total cost in USD
+		}),
+	}),
+	period: z.number(), // Period in days (e.g., 30)
+})
+
+export type UsageStats = z.infer<typeof usageStatsSchema>

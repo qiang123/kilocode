@@ -2,9 +2,9 @@
 
 ### Prerequisites
 
-- [Docker Desktop](https://docs.docker.com/desktop/)
-- [git](https://git-scm.com/)
-- That's it!
+-   [Docker Desktop](https://docs.docker.com/desktop/)
+-   [git](https://git-scm.com/)
+-   That's it!
 
 ### Setup
 
@@ -29,7 +29,7 @@ Start the evals service:
 pnpm evals
 ```
 
-The initial build process can take a minute or two. Upon success you should see output indicating that a web service is running on localhost:3000:
+The initial build process can take a minute or two. Upon success you should see output indicating that a web service is running on localhost:3446:
 <img width="1182" src="https://github.com/user-attachments/assets/34f25a59-1362-458c-aafa-25e13cdb2a7a" />
 
 Additionally, you'll find in Docker Desktop that database and redis services are running:
@@ -80,22 +80,22 @@ cd packages/evals && ./scripts/setup.sh
 
 The setup script does the following:
 
-- Installs development tools: Homebrew, asdf, GitHub CLI, pnpm
-- Installs programming languages: Node.js 20.19.2, Python 3.13.2, Go 1.24.2, Rust 1.85.1, Java 17
-- Sets up VS Code with required extensions
-- Configures Docker services (PostgreSQL, Redis)
-- Clones/updates the evals repository
-- Creates and migrates a Postgres database
-- Prompts for an OpenRouter API key to add to `.env.local`
-- Optionally builds and installs the Roo Code extension from source
+-   Installs development tools: Homebrew, asdf, GitHub CLI, pnpm
+-   Installs programming languages: Node.js 20.19.2, Python 3.13.2, Go 1.24.2, Rust 1.85.1, Java 17
+-   Sets up VS Code with required extensions
+-   Configures Docker services (PostgreSQL, Redis)
+-   Clones/updates the evals repository
+-   Creates and migrates a Postgres database
+-   Prompts for an OpenRouter API key to add to `.env.local`
+-   Optionally builds and installs the Roo Code extension from source
 
 ## Port Configuration
 
 By default, the evals system uses the following ports:
 
-- **PostgreSQL**: 5433 (external) → 5432 (internal)
-- **Redis**: 6380 (external) → 6379 (internal)
-- **Web Service**: 3446 (external) → 3000 (internal)
+-   **PostgreSQL**: 5433 (external) → 5432 (internal)
+-   **Redis**: 6380 (external) → 6379 (internal)
+-   **Web Service**: 3446 (external) → 3446 (internal)
 
 These ports are configured to avoid conflicts with other services that might be running on the standard PostgreSQL (5432) and Redis (6379) ports.
 

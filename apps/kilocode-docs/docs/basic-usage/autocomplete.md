@@ -11,10 +11,10 @@ Kilo Code's autocomplete feature provides intelligent code suggestions and compl
 
 Autocomplete analyzes your code context and provides:
 
-- **Inline completions** as you type
-- **Quick fixes** for common code patterns
-- **Contextual suggestions** based on your surrounding code
-- **Multi-line completions** for complex code structures
+-   **Inline completions** as you type
+-   **Quick fixes** for common code patterns
+-   **Contextual suggestions** based on your surrounding code
+-   **Multi-line completions** for complex code structures
 
 The feature uses your selected AI provider to generate intelligent suggestions that match your coding style and project context.
 
@@ -24,9 +24,9 @@ The feature uses your selected AI provider to generate intelligent suggestions t
 
 When enabled, Kilo Code automatically triggers autocomplete when you pause typing. This provides a seamless coding experience where suggestions appear naturally as you work.
 
-- **Auto Trigger Delay**: Configure the delay (in seconds) before autocomplete triggers after you stop typing
-- Default is 3 seconds, but this can be adjusted up or down
-- Shorter delays mean quicker suggestions but may be more resource-intensive
+-   **Auto Trigger Delay**: Configure the delay (in seconds) before autocomplete triggers after you stop typing
+-   Default is 3 seconds, but this can be adjusted up or down
+-   Shorter delays mean quicker suggestions but may be more resource-intensive
 
 ### Quick Task (Cmd+I)
 
@@ -39,10 +39,10 @@ Need to make a quick change? The Quick Task feature allows you to:
 
 **Examples:**
 
-- "create a React component with these props"
-- "add error handling to this function"
-- "convert this to TypeScript"
-- "optimize this loop for performance"
+-   "create a React component with these props"
+-   "add error handling to this function"
+-   "convert this to TypeScript"
+-   "optimize this loop for performance"
 
 You can customize the keyboard shortcut in VS Code's keyboard shortcuts settings.
 
@@ -57,23 +57,32 @@ For more control over when suggestions appear:
 
 This is ideal for:
 
-- Quick fixes
-- Code completions
-- Refactoring suggestions
-- Keeping you in the flow without interruptions
+-   Quick fixes
+-   Code completions
+-   Refactoring suggestions
+-   Keeping you in the flow without interruptions
 
 You can customize this keyboard shortcut as well in your VS Code settings.
 
-## Advanced Settings
+## Disable Rival Autocomplete
 
-### Provider Configuration
+We recommend disabling rival autocompletes to optimize your experience with Kilo Code. To disable GitHub Copilot autocomplete in VSCode, go to **Settings** and navigate to **GitHub** > **Copilot: Advanced** (or search for 'copilot').
 
-By default, autocomplete uses your main Kilo Code/OpenRouter/Mistral credentials with the Codestral model.
-This model is recommended as it strikes an optimal balance between performance speed and capability.
-However, you can:
+Then, toggle to 'disabled':
 
-- **Use custom provider**: Toggle this option to use a different AI provider specifically for autocomplete
-- **Select different models**: Choose models optimized for speed vs. quality based on your needs
+<img
+  src="https://github.com/user-attachments/assets/60c69417-1d1c-4a48-9820-5390c30ae25c"
+  alt="Disable GitHub Copilot in VSCode"
+  width="800"
+/>
+
+If using Cursor, go to **Settings** > **Cursor Settings** > **Tab**, and toggle off 'Cursor Tab':
+
+<img
+  src="https://github.com/user-attachments/assets/fd2eeae2-f770-40ca-8a72-a9d5a1c17d47"
+  alt="Disable Cursor autocomplete"
+  width="800"
+/>
 
 ## Best Practices
 
@@ -85,10 +94,10 @@ However, you can:
 
 ## Tips
 
-- Autocomplete works best with clear, well-structured code
-- Comments above functions help autocomplete understand intent
-- Variable and function names matter - descriptive names lead to better suggestions
+-   Autocomplete works best with clear, well-structured code
+-   Comments above functions help autocomplete understand intent
+-   Variable and function names matter - descriptive names lead to better suggestions
 
 ## Related Features
 
-- [Code Actions](../features/code-actions) - Context menu options for common coding tasks
+-   [Code Actions](../features/code-actions) - Context menu options for common coding tasks

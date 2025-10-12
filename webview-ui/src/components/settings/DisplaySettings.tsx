@@ -1,24 +1,39 @@
+// kilocode_change - new file
 import { HTMLAttributes, useMemo, useState } from "react"
 import { useAppTranslation } from "@/i18n/TranslationContext"
 import { VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
 import { Monitor } from "lucide-react"
+import { telemetryClient } from "@/utils/TelemetryClient"
 
 import { SetCachedStateField } from "./types"
 import { SectionHeader } from "./SectionHeader"
 import { Section } from "./Section"
 import { TaskTimeline } from "../chat/TaskTimeline"
 import { generateSampleTimelineData } from "../../utils/timeline/mockData"
+import { Slider } from "../ui"
 
 type DisplaySettingsProps = HTMLAttributes<HTMLDivElement> & {
 	showTaskTimeline?: boolean
+	showTimestamps?: boolean
 	ghostServiceSettings?: any
-	setCachedStateField: SetCachedStateField<"showTaskTimeline" | "ghostServiceSettings">
+	reasoningBlockCollapsed: boolean
+	setCachedStateField: SetCachedStateField<
+		| "showTaskTimeline"
+		| "ghostServiceSettings"
+		| "reasoningBlockCollapsed"
+		| "hideCostBelowThreshold"
+		| "showTimestamps"
+	>
+	hideCostBelowThreshold?: number
 }
 
 export const DisplaySettings = ({
 	showTaskTimeline,
+	showTimestamps,
 	ghostServiceSettings,
 	setCachedStateField,
+	reasoningBlockCollapsed,
+	hideCostBelowThreshold,
 	...props
 }: DisplaySettingsProps) => {
 	const { t } = useAppTranslation()
@@ -38,6 +53,15 @@ export const DisplaySettings = ({
 		})
 	}
 
+	const handleReasoningBlockCollapsedChange = (value: boolean) => {
+		setCachedStateField("reasoningBlockCollapsed", value)
+
+		// Track telemetry event
+		telemetryClient.capture("ui_settings_collapse_thinking_changed", {
+			enabled: value,
+		})
+	}
+
 	return (
 		<div {...props}>
 			<SectionHeader>
@@ -48,6 +72,17 @@ export const DisplaySettings = ({
 			</SectionHeader>
 
 			<Section>
+				<div className="flex flex-col gap-1">
+					<VSCodeCheckbox
+						checked={reasoningBlockCollapsed}
+						onChange={(e: any) => handleReasoningBlockCollapsedChange(e.target.checked)}
+						data-testid="collapse-thinking-checkbox">
+						<span className="font-medium">{t("settings:ui.collapseThinking.label")}</span>
+					</VSCodeCheckbox>
+					<div className="text-vscode-descriptionForeground text-sm ml-5 mt-1">
+						{t("settings:ui.collapseThinking.description")}
+					</div>
+				</div>
 				<div>
 					<VSCodeCheckbox
 						checked={showTaskTimeline}
@@ -68,7 +103,19 @@ export const DisplaySettings = ({
 						</div>
 					</div>
 				</div>
-
+				{/* Show Timestamps checkbox */}
+				<div className="mt-3">
+					<VSCodeCheckbox
+						checked={showTimestamps}
+						onChange={(e: any) => {
+							setCachedStateField("showTimestamps", e.target.checked)
+						}}>
+						<span className="font-medium">{t("settings:display.showTimestamps.label")}</span>
+					</VSCodeCheckbox>
+					<div className="text-vscode-descriptionForeground text-sm mt-1">
+						{t("settings:display.showTimestamps.description")}
+					</div>
+				</div>
 				{/* Gutter Animation Setting */}
 				<div className="mt-6 pt-6 border-t border-vscode-panel-border">
 					<div className="flex flex-col gap-1">
@@ -93,6 +140,37 @@ export const DisplaySettings = ({
 							<span className="text-vscode-descriptionForeground text-xs">
 								{t("settings:ghost.showGutterAnimation.preview")}
 							</span>
+						</div>
+					</div>
+				</div>
+			</Section>
+
+			<Section>
+				<div>
+					<div className="font-medium">{t("settings:display.costThreshold.label")}</div>
+					<div className="text-vscode-descriptionForeground text-sm mt-1">
+						{t("settings:display.costThreshold.description")}
+					</div>
+
+					<div className="mt-3">
+						<div className="flex items-center gap-2">
+							<Slider
+								min={0}
+								max={1}
+								step={0.01}
+								value={[hideCostBelowThreshold ?? 0]}
+								onValueChange={([value]) => setCachedStateField("hideCostBelowThreshold", value)}
+								data-testid="cost-threshold-slider"
+								className="flex-1"
+							/>
+							<span className="text-sm text-vscode-foreground min-w-[60px]">
+								${(hideCostBelowThreshold ?? 0).toFixed(2)}
+							</span>
+						</div>
+						<div className="text-xs text-vscode-descriptionForeground mt-1">
+							{t("settings:display.costThreshold.currentValue", {
+								value: (hideCostBelowThreshold ?? 0).toFixed(2),
+							})}
 						</div>
 					</div>
 				</div>

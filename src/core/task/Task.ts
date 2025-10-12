@@ -224,6 +224,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 	didFinishAbortingStream = false
 	abandoned = false
+	abortReason?: ClineApiReqCancelReason
 	isInitialized = false
 	isPaused: boolean = false
 	pausedModeSlug: string = defaultModeSlug
@@ -350,7 +351,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// Normal use-case is usually retry similar history task with new workspace.
 		this.workspacePath = parentTask
 			? parentTask.workspacePath
-			: (workspacePath ?? getWorkspacePath(path.join(os.homedir(), "Documents"))) // kilocode_change: use Documents instead of Desktop as default
+			: workspacePath ?? getWorkspacePath(path.join(os.homedir(), "Documents")) // kilocode_change: use Documents instead of Desktop as default
 
 		this.instanceId = crypto.randomUUID().slice(0, 8)
 		this.taskNumber = -1
@@ -1208,11 +1209,21 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	}
 
 	async sayAndCreateMissingParamError(toolName: ToolName, paramName: string, relPath?: string) {
+		const kilocodeExtraText = (() => {
+			switch (toolName) {
+				case "apply_diff":
+					return t("kilocode:task.disableApplyDiff") + " "
+				case "edit_file":
+					return t("kilocode:task.disableEditFile") + " "
+				default:
+					return ""
+			}
+		})()
 		await this.say(
 			"error",
 			`Kilo Code tried to use ${toolName}${
 				relPath ? ` for '${relPath.toPosix()}'` : ""
-			} without value for required parameter '${paramName}'. Retrying...`,
+			} without value for required parameter '${paramName}'. ${kilocodeExtraText}Retrying...`,
 		)
 		return formatResponse.toolError(formatResponse.missingToolParameterError(paramName))
 	}
@@ -1296,6 +1307,16 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 		if (lastRelevantMessageIndex !== -1) {
 			modifiedClineMessages.splice(lastRelevantMessageIndex + 1)
+		}
+
+		// Remove any trailing reasoning-only UI messages that were not part of the persisted API conversation
+		while (modifiedClineMessages.length > 0) {
+			const last = modifiedClineMessages[modifiedClineMessages.length - 1]
+			if (last.type === "say" && last.say === "reasoning") {
+				modifiedClineMessages.pop()
+			} else {
+				break
+			}
 		}
 
 		// Since we don't use `api_req_finished` anymore, we need to check if the
@@ -1885,6 +1906,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				let totalCost: number | undefined
 
 				// kilocode_change start
+				let inferenceProvider: string | undefined
 				let usageMissing = false
 				const apiRequestStartTime = performance.now()
 				// kilocode_change end
@@ -1917,7 +1939,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 								cacheWriteTokens,
 								cacheReadTokens,
 							),
-						usageMissing, // kilocode_change
+						// kilocode_change start
+						usageMissing,
+						inferenceProvider,
+						// kilocode_change end
 						cancelReason,
 						streamingFailedMessage,
 					} satisfies ClineApiReqInfo)
@@ -1936,28 +1961,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						lastMessage.partial = false
 						// instead of streaming partialMessage events, we do a save and post like normal to persist to disk
 						console.log("updating partial message", lastMessage)
-						// await this.saveClineMessages()
 					}
 
-					// Let assistant know their response was interrupted for when task is resumed
-					await this.addToApiConversationHistory({
-						role: "assistant",
-						content: [
-							{
-								type: "text",
-								text:
-									assistantMessage +
-									`\n\n[${
-										cancelReason === "streaming_failed"
-											? "Response interrupted by API Error"
-											: "Response interrupted by user"
-									}]`,
-							},
-						],
-					})
-
 					// Update `api_req_started` to have cancelled and cost, so that
-					// we can display the cost of the partial stream.
+					// we can display the cost of the partial stream and the cancellation reason
 					updateApiReqMsg(cancelReason, streamingFailedMessage)
 					await this.saveClineMessages()
 
@@ -2003,16 +2010,29 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						}
 
 						switch (chunk.type) {
-							case "reasoning":
+							case "reasoning": {
 								reasoningMessage += chunk.text
-								await this.say("reasoning", reasoningMessage, undefined, true)
+								// Only apply formatting if the message contains sentence-ending punctuation followed by **
+								let formattedReasoning = reasoningMessage
+								if (reasoningMessage.includes("**")) {
+									// Add line breaks before **Title** patterns that appear after sentence endings
+									// This targets section headers like "...end of sentence.**Title Here**"
+									// Handles periods, exclamation marks, and question marks
+									formattedReasoning = reasoningMessage.replace(
+										/([.!?])\*\*([^*\n]+)\*\*/g,
+										"$1\n\n**$2**",
+									)
+								}
+								await this.say("reasoning", formattedReasoning, undefined, true)
 								break
+							}
 							case "usage":
 								inputTokens += chunk.inputTokens
 								outputTokens += chunk.outputTokens
 								cacheWriteTokens += chunk.cacheWriteTokens ?? 0
 								cacheReadTokens += chunk.cacheReadTokens ?? 0
 								totalCost = chunk.totalCost
+								inferenceProvider = chunk.inferenceProvider // kilocode_change
 								break
 							case "grounding":
 								// Handle grounding sources separately from regular content
@@ -2156,7 +2176,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 											tokens.cacheWrite,
 											tokens.cacheRead,
 										),
-									completionTime: performance.now() - apiRequestStartTime, // kilocode_change
+									// kilocode_change start
+									completionTime: performance.now() - apiRequestStartTime,
+									inferenceProvider,
+									// kilocode_change end
 								})
 							}
 						}
@@ -2191,6 +2214,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 									bgCacheWriteTokens += chunk.cacheWriteTokens ?? 0
 									bgCacheReadTokens += chunk.cacheReadTokens ?? 0
 									bgTotalCost = chunk.totalCost
+									inferenceProvider = chunk.inferenceProvider // kilocode_change
 								}
 							}
 
@@ -2263,24 +2287,23 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 						// may have executed), so we just resort to replicating a
 						// cancel task.
 
-						// Check if this was a user-initiated cancellation BEFORE calling abortTask
-						// If this.abort is already true, it means the user clicked cancel, so we should
-						// treat this as "user_cancelled" rather than "streaming_failed"
-						const cancelReason = this.abort ? "user_cancelled" : "streaming_failed"
+						// Determine cancellation reason BEFORE aborting to ensure correct persistence
+						const cancelReason: ClineApiReqCancelReason = this.abort ? "user_cancelled" : "streaming_failed"
 
 						const streamingFailedMessage = this.abort
 							? undefined
-							: (error.message ?? JSON.stringify(serializeError(error), null, 2))
+							: error.message ?? JSON.stringify(serializeError(error), null, 2)
 
-						// Now call abortTask after determining the cancel reason.
-						await this.abortTask()
+						// Persist interruption details first to both UI and API histories
 						await abortStream(cancelReason, streamingFailedMessage)
 
-						const history = await provider?.getTaskWithId(this.taskId)
+						// Record reason for provider to decide rehydration path
+						this.abortReason = cancelReason
 
-						if (history) {
-							await provider?.createTaskWithHistoryItem(history.historyItem)
-						}
+						// Now abort (emits TaskAborted which provider listens to)
+						await this.abortTask()
+
+						// Do not rehydrate here; provider owns rehydration to avoid duplication races
 					}
 				} finally {
 					this.isStreaming = false
@@ -2324,6 +2347,22 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				// Note: updateApiReqMsg() is now called from within drainStreamInBackgroundToFindAllUsage
 				// to ensure usage data is captured even when the stream is interrupted. The background task
 				// uses local variables to accumulate usage data before atomically updating the shared state.
+
+				// Complete the reasoning message if it exists
+				// We can't use say() here because the reasoning message may not be the last message
+				// (other messages like text blocks or tool uses may have been added after it during streaming)
+				if (reasoningMessage) {
+					const lastReasoningIndex = findLastIndex(
+						this.clineMessages,
+						(m) => m.type === "say" && m.say === "reasoning",
+					)
+
+					if (lastReasoningIndex !== -1 && this.clineMessages[lastReasoningIndex].partial) {
+						this.clineMessages[lastReasoningIndex].partial = false
+						await this.updateClineMessage(this.clineMessages[lastReasoningIndex])
+					}
+				}
+
 				await this.persistGpt5Metadata(reasoningMessage)
 				await this.saveClineMessages()
 				await this.providerRef.deref()?.postStateToWebview()
@@ -2861,10 +2900,10 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 					? this.ask(
 							"payment_required_prompt",
 							JSON.stringify({
-								title: t("kilocode:lowCreditWarning.title"),
-								message: t("kilocode:lowCreditWarning.message"),
-								balance: (error as any).balance ?? "0.00",
-								buyCreditsUrl: (error as any).buyCreditsUrl ?? "https://kilocode.ai/profile",
+								title: error.error?.title ?? t("kilocode:lowCreditWarning.title"),
+								message: error.error?.message ?? t("kilocode:lowCreditWarning.message"),
+								balance: error.error?.balance ?? "0.00",
+								buyCreditsUrl: error.error?.buyCreditsUrl ?? "https://kilocode.ai/profile",
 							}),
 						)
 					: this.ask(

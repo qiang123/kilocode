@@ -193,7 +193,7 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new OVHcloudAIEndpointsHandler(options)
 		// kilocode_change end
 		default:
-			apiProvider satisfies "gemini-cli" | undefined
+			apiProvider satisfies "gemini-cli" | "codebuff" | undefined
 			return new AnthropicHandler(options)
 	}
 }

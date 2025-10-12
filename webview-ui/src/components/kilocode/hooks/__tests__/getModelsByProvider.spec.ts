@@ -31,6 +31,7 @@ describe("getModelsByProvider", () => {
 			ovhcloud: { "test-model": testModel },
 			chutes: { "test-model": testModel },
 			// kilocode_change end
+			codebuff: { "test-model": testModel },
 		}
 
 		const exceptions = [

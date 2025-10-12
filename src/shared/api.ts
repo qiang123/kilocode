@@ -167,6 +167,7 @@ const dynamicProviderExtras = {
 	lmstudio: {} as {}, // eslint-disable-line @typescript-eslint/no-empty-object-type
 	ovhcloud: {} as { apiKey?: string }, // kilocode_change
 	chutes: {} as { apiKey?: string }, // kilocode_change
+	codebuff: {} as { apiKey: string; baseUrl: string },
 } as const satisfies Record<RouterName, object>
 
 // Build the dynamic options union from the map, intersected with CommonFetchParams

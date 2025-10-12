@@ -111,6 +111,26 @@ async function main() {
 				})
 			},
 		},
+      {
+        name: 'scm-loader',
+        setup(build) {
+          // 拦截加载 .scm 文件的请求
+          build.onLoad({ filter: /\.scm$/ }, async (args) => {
+            // 读取并转换内容
+            const contents =  fs.readFileSync(args.path, 'utf8');
+            const escaped = contents
+              .replace(/\\/g, '\\\\')
+              .replace(/`/g, '\\`')
+              .replace(/\$/g, '\\$')
+              .replace(/"/g, '\\"');
+			// console.log(`export default "${escaped}";`);
+            return {
+              contents: `export default \`${escaped}\`;`,
+              loader: 'js'
+            };
+          });
+        }
+      }
 	]
 
 	/**

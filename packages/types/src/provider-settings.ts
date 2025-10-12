@@ -55,6 +55,7 @@ export const dynamicProviders = [
 	"requesty",
 	"unbound",
 	"glama",
+	"codebuff",
 ] as const
 
 export type DynamicProvider = (typeof dynamicProviders)[number]
@@ -150,6 +151,7 @@ export const providerNames = [
 	"vertex",
 	"xai",
 	"zai",
+	"codebuff",
 ] as const
 
 export const providerNamesSchema = z.enum(providerNames)
@@ -299,6 +301,14 @@ const lmStudioSchema = baseProviderSettingsSchema.extend({
 	lmStudioBaseUrl: z.string().optional(),
 	lmStudioDraftModelId: z.string().optional(),
 	lmStudioSpeculativeDecodingEnabled: z.boolean().optional(),
+})
+
+const codebuffSchema = baseProviderSettingsSchema.extend({
+	codebuffAgentId: z.string().optional(),
+	codebuffApiKey: z.string().optional(),
+	codebuffBaseUrl: z.string().optional(),
+	useCodebuffSdk: z.boolean().optional(),
+	codebuffUsePromptCache: z.boolean().optional(),
 })
 
 const geminiSchema = apiModelIdProviderModelSchema.extend({
@@ -575,6 +585,7 @@ export const providerSettingsSchema = z.object({
 	...vercelAiGatewaySchema.shape,
 	...codebaseIndexProviderSchema.shape,
 	...ovhcloudSchema.shape, // kilocode_change
+	...codebuffSchema.shape,
 })
 
 export type ProviderSettings = z.infer<typeof providerSettingsSchema>
@@ -610,6 +621,7 @@ export const modelIdKeys = [
 	"deepInfraModelId",
 	"kilocodeModel",
 	"ovhCloudAiEndpointsModelId", // kilocode_change
+	"codebuffAgentId",
 ] as const satisfies readonly (keyof ProviderSettings)[]
 
 export type ModelIdKey = (typeof modelIdKeys)[number]
@@ -666,6 +678,7 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 	kilocode: "kilocodeModel",
 	"virtual-quota-fallback": "apiModelId",
 	ovhcloud: "ovhCloudAiEndpointsModelId", // kilocode_change
+	codebuff: "codebuffAgentId",
 }
 
 /**
@@ -675,7 +688,10 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 // Providers that use Anthropic-style API protocol.
 export const ANTHROPIC_STYLE_PROVIDERS: ProviderName[] = ["anthropic", "claude-code", "bedrock"]
 
-export const getApiProtocol = (provider: ProviderName | undefined, modelId?: string): "anthropic" | "openai" => {
+export const getApiProtocol = (
+	provider: ProviderName | undefined,
+	modelId?: string,
+): "anthropic" | "openai" | "codebuff" => {
 	if (provider && ANTHROPIC_STYLE_PROVIDERS.includes(provider)) {
 		return "anthropic"
 	}
@@ -688,6 +704,9 @@ export const getApiProtocol = (provider: ProviderName | undefined, modelId?: str
 	if (provider && provider === "vercel-ai-gateway" && modelId && modelId.toLowerCase().startsWith("anthropic/")) {
 		return "anthropic"
 	}
+	if (provider && provider === "codebuff") {
+		return "codebuff"
+	}
 
 	return "openai"
 }
@@ -697,7 +716,7 @@ export const getApiProtocol = (provider: ProviderName | undefined, modelId?: str
  */
 
 export const MODELS_BY_PROVIDER: Record<
-	Exclude<ProviderName, "fake-ai" | "human-relay" | "gemini-cli" | "lmstudio" | "openai" | "ollama">,
+	Exclude<ProviderName, "fake-ai" | "human-relay" | "gemini-cli" | "lmstudio" | "openai" | "ollama" | "codebuff">,
 	{ id: ProviderName; label: string; models: string[] }
 > = {
 	anthropic: {

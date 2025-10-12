@@ -45,6 +45,7 @@ type ModelIdKey = keyof Pick<
 	| "ioIntelligenceModelId"
 	| "vercelAiGatewayModelId"
 	| "ovhCloudAiEndpointsModelId" // kilocode_change
+	| "codebuffAgentId"
 >
 
 interface ModelPickerProps {

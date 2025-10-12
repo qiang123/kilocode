@@ -64,6 +64,7 @@ import {
 	BEDROCK_1M_CONTEXT_MODEL_IDS,
 	deepInfraDefaultModelId,
 	ovhCloudAiEndpointsDefaultModelId, // kilocode_change
+	codebuffDefaultModelId,
 } from "@roo-code/types"
 
 import type { ModelRecord, RouterModels } from "@roo/api"
@@ -194,6 +195,11 @@ function getSelectedModel({
 		case "litellm": {
 			const id = apiConfiguration.litellmModelId ?? litellmDefaultModelId
 			const info = routerModels.litellm[id]
+			return { id, info }
+		}
+		case "codebuff": {
+			const id = apiConfiguration.codebuffAgentId ?? codebuffDefaultModelId
+			const info = routerModels.codebuff[id]
 			return { id, info }
 		}
 		case "deepinfra": {

@@ -106,6 +106,7 @@ import {
 	VercelAiGateway,
 	DeepInfra,
 	OvhCloudAiEndpoints, // kilocode_change
+	Codebuff,
 } from "./providers"
 
 import { MODELS_BY_PROVIDER, PROVIDERS } from "./constants"
@@ -703,6 +704,15 @@ const ApiOptions = ({
 
 			{selectedProvider === "litellm" && (
 				<LiteLLM
+					apiConfiguration={apiConfiguration}
+					setApiConfigurationField={setApiConfigurationField}
+					organizationAllowList={organizationAllowList}
+					modelValidationError={modelValidationError}
+				/>
+			)}
+
+			{selectedProvider === "codebuff" && (
+				<Codebuff
 					apiConfiguration={apiConfiguration}
 					setApiConfigurationField={setApiConfigurationField}
 					organizationAllowList={organizationAllowList}

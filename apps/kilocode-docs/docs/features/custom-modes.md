@@ -8,12 +8,12 @@ Each mode—including custom ones—features **Sticky Models**. This means Kilo 
 
 ## Why Use Custom Modes?
 
-- **Specialization:** Create modes optimized for specific tasks, like "Documentation Writer," "Test Engineer," or "Refactoring Expert"
-- **Safety:** Restrict a mode's access to sensitive files or commands. For example, a "Review Mode" could be limited to read-only operations
-- **Experimentation:** Safely experiment with different prompts and configurations without affecting other modes
-- **Team Collaboration:** Share custom modes with your team to standardize workflows
+-   **Specialization:** Create modes optimized for specific tasks, like "Documentation Writer," "Test Engineer," or "Refactoring Expert"
+-   **Safety:** Restrict a mode's access to sensitive files or commands. For example, a "Review Mode" could be limited to read-only operations
+-   **Experimentation:** Safely experiment with different prompts and configurations without affecting other modes
+-   **Team Collaboration:** Share custom modes with your team to standardize workflows
 
-<img src="/img/custom-modes/custom-modes.png" alt="Overview of custom modes interface" width="600" />
+<img src="/docs/img/custom-modes/custom-modes.png" alt="Overview of custom modes interface" width="600" />
 
 _Kilo Code's interface for creating and managing custom modes._
 
@@ -37,11 +37,11 @@ Easily share, back up, and template your custom modes. This feature lets you exp
 
 ### Key Features
 
-- **Shareable Setups:** Package a mode and its rules into one file to easily share with your team
-- **Easy Backups:** Save your custom mode configurations so you never lose them
-- **Project Templates:** Create standardized mode templates for different types of projects
-- **Simple Migration:** Move modes between your global settings and specific projects effortlessly
-- **Flexible Slug Changes:** Change mode slugs in exported files without manual path editing
+-   **Shareable Setups:** Package a mode and its rules into one file to easily share with your team
+-   **Easy Backups:** Save your custom mode configurations so you never lose them
+-   **Project Templates:** Create standardized mode templates for different types of projects
+-   **Simple Migration:** Move modes between your global settings and specific projects effortlessly
+-   **Flexible Slug Changes:** Change mode slugs in exported files without manual path editing
 
 ### How it Works
 
@@ -58,8 +58,8 @@ Easily share, back up, and template your custom modes. This feature lets you exp
 1. Click the Import Mode button (upload icon) in the Modes view
 2. Select the mode's YAML file
 3. Choose the import level:
-   - **Project:** Available only in current workspace (saved to `.kilocodemodes` file)
-   - **Global:** Available in all projects (saved to global settings)
+    - **Project:** Available only in current workspace (saved to `.kilocodemodes` file)
+    - **Global:** Available in all projects (saved to global settings)
 
 ### Changing Slugs on Import
 
@@ -89,7 +89,7 @@ Kilo Code will guide you through the process, prompting for necessary informatio
 2. **Create New Mode:** Click the <Codicon name="add" /> button to the right of the Modes heading
 3. **Fill in Fields:**
 
-<img src="/img/custom-modes/custom-modes-2.png" alt="Custom mode creation interface in the Prompts tab" width="600" />
+<img src="/docs/img/custom-modes/custom-modes-2.png" alt="Custom mode creation interface in the Prompts tab" width="600" />
 
 _The custom mode creation interface showing fields for name, slug, description, save location, role definition, available tools, custom instructions._
 
@@ -99,8 +99,8 @@ The interface provides fields for Name, Slug, Description, Save Location, Role D
 
 You can directly edit the configuration files to create or modify custom modes. This method offers the most control over all properties. Kilo Code now supports both YAML (preferred) and JSON formats.
 
-- **Global Modes:** Edit the `custom_modes.yaml` (preferred) or `custom_modes.json` file. Access it via Prompts Tab > <Codicon name="gear" /> (Settings Menu icon next to "Global Prompts") > "Edit Global Modes"
-- **Project Modes:** Edit the `.kilocodemodes` file (which can be YAML or JSON) in your project root. Access it via Prompts Tab > <Codicon name="gear" /> (Settings Menu icon next to "Project Prompts") > "Edit Project Modes"
+-   **Global Modes:** Edit the `custom_modes.yaml` (preferred) or `custom_modes.json` file. Access it via Prompts Tab > <Codicon name="gear" /> (Settings Menu icon next to "Global Prompts") > "Edit Global Modes"
+-   **Project Modes:** Edit the `.kilocodemodes` file (which can be YAML or JSON) in your project root. Access it via Prompts Tab > <Codicon name="gear" /> (Settings Menu icon next to "Project Prompts") > "Edit Project Modes"
 
 These files define an array/list of custom modes.
 
@@ -112,45 +112,42 @@ YAML is now the preferred format for defining custom modes due to better readabi
 
 ```yaml
 customModes:
-  - slug: docs-writer
-    name: 📝 Documentation Writer
-    description: A specialized mode for writing and editing technical documentation.
-    roleDefinition: You are a technical writer specializing in clear documentation.
-    whenToUse: Use this mode for writing and editing documentation.
-    customInstructions: Focus on clarity and completeness in documentation.
-    groups:
-      - read
-      - - edit # First element of tuple
-        - fileRegex: \.(md|mdx)$ # Second element is the options object
-          description: Markdown files only
-      - browser
-  - slug: another-mode
-    name: Another Mode
-    # ... other properties
+    - slug: docs-writer
+      name: 📝 Documentation Writer
+      description: A specialized mode for writing and editing technical documentation.
+      roleDefinition: You are a technical writer specializing in clear documentation.
+      whenToUse: Use this mode for writing and editing documentation.
+      customInstructions: Focus on clarity and completeness in documentation.
+      groups:
+          - read
+          - - edit # First element of tuple
+            - fileRegex: \.(md|mdx)$ # Second element is the options object
+              description: Markdown files only
+          - browser
+    - slug: another-mode
+      name: Another Mode
+      # ... other properties
 ```
 
 ### JSON Alternative
 
 ```json
 {
-  "customModes": [
-    {
-      "slug": "docs-writer",
-      "name": "📝 Documentation Writer",
-      "description": "A specialized mode for writing and editing technical documentation.",
-      "roleDefinition": "You are a technical writer specializing in clear documentation.",
-      "whenToUse": "Use this mode for writing and editing documentation.",
-      "customInstructions": "Focus on clarity and completeness in documentation.",
-      "groups": [
-        "read",
-        [
-          "edit",
-          { "fileRegex": "\\.(md|mdx)$", "description": "Markdown files only" }
-        ],
-        "browser"
-      ]
-    }
-  ]
+	"customModes": [
+		{
+			"slug": "docs-writer",
+			"name": "📝 Documentation Writer",
+			"description": "A specialized mode for writing and editing technical documentation.",
+			"roleDefinition": "You are a technical writer specializing in clear documentation.",
+			"whenToUse": "Use this mode for writing and editing documentation.",
+			"customInstructions": "Focus on clarity and completeness in documentation.",
+			"groups": [
+				"read",
+				["edit", { "fileRegex": "\\.(md|mdx)$", "description": "Markdown files only" }],
+				"browser"
+			]
+		}
+	]
 }
 ```
 
@@ -158,71 +155,71 @@ customModes:
 
 ### `slug`
 
-- **Purpose:** A unique identifier for the mode
-- **Format:** Must match the pattern `/^[a-zA-Z0-9-]+$/` (only letters, numbers, and hyphens)
-- **Usage:** Used internally and in file/directory names for mode-specific rules (e.g., `.kilo/rules-{slug}/`)
-- **Recommendation:** Keep it short and descriptive
+-   **Purpose:** A unique identifier for the mode
+-   **Format:** Must match the pattern `/^[a-zA-Z0-9-]+$/` (only letters, numbers, and hyphens)
+-   **Usage:** Used internally and in file/directory names for mode-specific rules (e.g., `.kilo/rules-{slug}/`)
+-   **Recommendation:** Keep it short and descriptive
 
 **YAML Example:** `slug: docs-writer`
 **JSON Example:** `"slug": "docs-writer"`
 
 ### `name`
 
-- **Purpose:** The display name shown in the Kilo Code UI
-- **Format:** Can include spaces and proper capitalization
+-   **Purpose:** The display name shown in the Kilo Code UI
+-   **Format:** Can include spaces and proper capitalization
 
 **YAML Example:** `name: 📝 Documentation Writer`
 **JSON Example:** `"name": "Documentation Writer"`
 
 ### `description`
 
-- **Purpose:** A short, user-friendly summary displayed below the mode name in the mode selector UI
-- **Format:** Keep this concise and focused on what the mode does for the user
-- **UI Display:** This text appears in the redesigned mode selector
+-   **Purpose:** A short, user-friendly summary displayed below the mode name in the mode selector UI
+-   **Format:** Keep this concise and focused on what the mode does for the user
+-   **UI Display:** This text appears in the redesigned mode selector
 
 **YAML Example:** `description: A specialized mode for writing and editing technical documentation.`
 **JSON Example:** `"description": "A specialized mode for writing and editing technical documentation."`
 
 ### `roleDefinition`
 
-- **Purpose:** Detailed description of the mode's role, expertise, and personality
-- **Placement:** This text is placed at the beginning of the system prompt when the mode is active
+-   **Purpose:** Detailed description of the mode's role, expertise, and personality
+-   **Placement:** This text is placed at the beginning of the system prompt when the mode is active
 
 **YAML Example (multi-line):**
 
 ```yaml
 roleDefinition: >-
-  You are a test engineer with expertise in:
-  - Writing comprehensive test suites
-  - Test-driven development
+    You are a test engineer with expertise in:
+    - Writing comprehensive test suites
+    - Test-driven development
 ```
 
 **JSON Example:** `"roleDefinition": "You are a technical writer specializing in clear documentation."`
 
 ### `groups`
 
-- **Purpose:** Array/list defining which tool groups the mode can access and any file restrictions
-- **Available Tool Groups:** `"read"`, `"edit"`, `"browser"`, `"command"`, `"mcp"`
-- **Structure:**
-  - Simple string for unrestricted access: `"edit"`
-  - Tuple (two-element array) for restricted access: `["edit", { fileRegex: "pattern", description: "optional" }]`
+-   **Purpose:** Array/list defining which tool groups the mode can access and any file restrictions
+-   **Available Tool Groups:** `"read"`, `"edit"`, `"browser"`, `"command"`, `"mcp"`
+-   **Structure:**
+    -   Simple string for unrestricted access: `"edit"`
+    -   Tuple (two-element array) for restricted access: `["edit", { fileRegex: "pattern", description: "optional" }]`
 
 **File Restrictions for "edit" group:**
 
-- `fileRegex`: A regular expression string to control which files the mode can edit
-- In YAML, typically use single backslashes for regex special characters (e.g., `\.md$`)
-- In JSON, backslashes must be double-escaped (e.g., `\\.md$`)
-- `description`: An optional string describing the restriction
+-   `fileRegex`: A regular expression string to control which files the mode can edit
+-   In YAML, typically use single backslashes for regex special characters (e.g., `\.md$`)
+-   In JSON, backslashes must be double-escaped (e.g., `\\.md$`)
+-   `description`: An optional string describing the restriction
 
 **YAML Example:**
 
 ```yaml
 groups:
-  - read
-  - - edit # First element of tuple
-    - fileRegex: \.(js|ts)$ # Second element is the options object
-      description: JS/TS files only
-  - command
+    - read
+    - - edit # First element of tuple
+      - fileRegex: \.(js|ts)$ # Second element is the options object
+        description: JS/TS files only
+    - command
 ```
 
 **JSON Example:**
@@ -237,25 +234,25 @@ groups:
 
 ### `whenToUse` (Optional)
 
-- **Purpose:** Provides guidance for Kilo's automated decision-making, particularly for mode selection and task orchestration
-- **Format:** A string describing ideal scenarios or task types for this mode
-- **Usage:** Used by Kilo for automated decisions and not displayed in the mode selector UI
+-   **Purpose:** Provides guidance for Kilo's automated decision-making, particularly for mode selection and task orchestration
+-   **Format:** A string describing ideal scenarios or task types for this mode
+-   **Usage:** Used by Kilo for automated decisions and not displayed in the mode selector UI
 
 **YAML Example:** `whenToUse: This mode is best for refactoring Python code.`
 **JSON Example:** `"whenToUse": "This mode is best for refactoring Python code."`
 
 ### `customInstructions` (Optional)
 
-- **Purpose:** A string containing additional behavioral guidelines for the mode
-- **Placement:** This text is added near the end of the system prompt
+-   **Purpose:** A string containing additional behavioral guidelines for the mode
+-   **Placement:** This text is added near the end of the system prompt
 
 **YAML Example (multi-line):**
 
 ```yaml
 customInstructions: |-
-  When writing tests:
-  - Use describe/it blocks
-  - Include meaningful descriptions
+    When writing tests:
+    - Use describe/it blocks
+    - Include meaningful descriptions
 ```
 
 **JSON Example:** `"customInstructions": "Focus on explaining concepts and providing examples."`
@@ -264,11 +261,11 @@ customInstructions: |-
 
 YAML is now the preferred format for defining custom modes due to several advantages:
 
-- **Readability:** YAML's indentation-based structure is easier for humans to read and understand
-- **Comments:** YAML allows for comments (lines starting with `#`), making it possible to annotate your mode definitions
-- **Multi-line Strings:** YAML provides cleaner syntax for multi-line strings using `|` (literal block) or `>` (folded block)
-- **Less Punctuation:** YAML generally requires less punctuation compared to JSON, reducing syntax errors
-- **Editor Support:** Most modern code editors provide excellent syntax highlighting and validation for YAML files
+-   **Readability:** YAML's indentation-based structure is easier for humans to read and understand
+-   **Comments:** YAML allows for comments (lines starting with `#`), making it possible to annotate your mode definitions
+-   **Multi-line Strings:** YAML provides cleaner syntax for multi-line strings using `|` (literal block) or `>` (folded block)
+-   **Less Punctuation:** YAML generally requires less punctuation compared to JSON, reducing syntax errors
+-   **Editor Support:** Most modern code editors provide excellent syntax highlighting and validation for YAML files
 
 While JSON is still fully supported, new modes created via the UI or by asking Kilo will default to YAML.
 
@@ -278,18 +275,18 @@ While JSON is still fully supported, new modes created via the UI or by asking K
 
 Automatic migration from `custom_modes.json` to `custom_modes.yaml` happens when:
 
-- Kilo Code starts up
-- A `custom_modes.json` file exists
-- No `custom_modes.yaml` file exists yet
+-   Kilo Code starts up
+-   A `custom_modes.json` file exists
+-   No `custom_modes.yaml` file exists yet
 
 The migration process preserves the original JSON file for rollback purposes.
 
 ### Project Modes (`.kilocodemodes`)
 
-- No automatic startup migration occurs for project-specific files
-- Kilo Code can read `.kilocodemodes` files in either YAML or JSON format
-- When editing through the UI, JSON files will be converted to YAML format
-- For manual conversion, you can ask Kilo to help reformat configurations
+-   No automatic startup migration occurs for project-specific files
+-   Kilo Code can read `.kilocodemodes` files in either YAML or JSON format
+-   When editing through the UI, JSON files will be converted to YAML format
+-   For manual conversion, you can ask Kilo to help reformat configurations
 
 ## Mode-Specific Instructions via Files/Directories
 
@@ -316,8 +313,8 @@ You can provide instructions for custom modes using dedicated files or directori
 
 **Rules Directory Scope:**
 
-- **Global modes:** Rules are stored in `~/.kilo/rules-{slug}/`
-- **Project modes:** Rules are stored in `{workspace}/.kilo/rules-{slug}/`
+-   **Global modes:** Rules are stored in `~/.kilo/rules-{slug}/`
+-   **Project modes:** Rules are stored in `{workspace}/.kilo/rules-{slug}/`
 
 The directory method takes precedence if it exists and contains files. Files within the directory are read recursively and appended in alphabetical order.
 
@@ -339,33 +336,33 @@ You can override Kilo Code's built-in modes (like 💻 Code, 🪲 Debug, ❓ Ask
 
 ```yaml
 customModes:
-  - slug: code # Matches the default 'code' mode slug
-    name: 💻 Code (Global Override)
-    roleDefinition: You are a software engineer with global-specific constraints.
-    whenToUse: This globally overridden code mode is for JS/TS tasks.
-    customInstructions: Focus on project-specific JS/TS development.
-    groups:
-      - read
-      - - edit
-        - fileRegex: \.(js|ts)$
-          description: JS/TS files only
+    - slug: code # Matches the default 'code' mode slug
+      name: 💻 Code (Global Override)
+      roleDefinition: You are a software engineer with global-specific constraints.
+      whenToUse: This globally overridden code mode is for JS/TS tasks.
+      customInstructions: Focus on project-specific JS/TS development.
+      groups:
+          - read
+          - - edit
+            - fileRegex: \.(js|ts)$
+              description: JS/TS files only
 ```
 
 ### Project-Specific Override Example
 
 ```yaml
 customModes:
-  - slug: code # Matches the default 'code' mode slug
-    name: 💻 Code (Project-Specific)
-    roleDefinition: You are a software engineer with project-specific constraints for this project.
-    whenToUse: This project-specific code mode is for Python tasks within this project.
-    customInstructions: Adhere to PEP8 and use type hints.
-    groups:
-      - read
-      - - edit
-        - fileRegex: \.py$
-          description: Python files only
-      - command
+    - slug: code # Matches the default 'code' mode slug
+      name: 💻 Code (Project-Specific)
+      roleDefinition: You are a software engineer with project-specific constraints for this project.
+      whenToUse: This project-specific code mode is for Python tasks within this project.
+      customInstructions: Adhere to PEP8 and use type hints.
+      groups:
+          - read
+          - - edit
+            - fileRegex: \.py$
+              description: Python files only
+          - command
 ```
 
 ## Understanding Regex in Custom Modes
@@ -386,11 +383,11 @@ Kilo will generate the pattern. Remember to adapt it for YAML (usually single ba
 
 ### Important Rules for `fileRegex`
 
-- **Escaping in JSON:** In JSON strings, backslashes (`\`) must be double-escaped (e.g., `\\.md$`)
-- **Escaping in YAML:** In unquoted or single-quoted YAML strings, a single backslash is usually sufficient for regex special characters (e.g., `\.md$`)
-- **Path Matching:** Patterns match against the full relative file path from your workspace root
-- **Case Sensitivity:** Regex patterns are case-sensitive by default
-- **Validation:** Invalid regex patterns are rejected with an "Invalid regular expression pattern" error message
+-   **Escaping in JSON:** In JSON strings, backslashes (`\`) must be double-escaped (e.g., `\\.md$`)
+-   **Escaping in YAML:** In unquoted or single-quoted YAML strings, a single backslash is usually sufficient for regex special characters (e.g., `\.md$`)
+-   **Path Matching:** Patterns match against the full relative file path from your workspace root
+-   **Case Sensitivity:** Regex patterns are case-sensitive by default
+-   **Validation:** Invalid regex patterns are rejected with an "Invalid regular expression pattern" error message
 
 ### Common Pattern Examples
 
@@ -404,22 +401,22 @@ Kilo will generate the pattern. Remember to adapt it for YAML (usually single ba
 
 ### Key Regex Building Blocks
 
-- `\.`: Matches a literal dot (YAML: `\.`, JSON: `\\.`)
-- `$`: Matches the end of the string
-- `^`: Matches the beginning of the string
-- `.*`: Matches any character (except newline) zero or more times
-- `(a|b)`: Matches either "a" or "b"
-- `(?!...)`: Negative lookahead
+-   `\.`: Matches a literal dot (YAML: `\.`, JSON: `\\.`)
+-   `$`: Matches the end of the string
+-   `^`: Matches the beginning of the string
+-   `.*`: Matches any character (except newline) zero or more times
+-   `(a|b)`: Matches either "a" or "b"
+-   `(?!...)`: Negative lookahead
 
 ## Error Handling
 
 When a mode attempts to edit a file that doesn't match its `fileRegex` pattern, you'll see a `FileRestrictionError` that includes:
 
-- The mode name
-- The allowed file pattern
-- The description (if provided)
-- The attempted file path
-- The tool that was blocked
+-   The mode name
+-   The allowed file pattern
+-   The description (if provided)
+-   The attempted file path
+-   The tool that was blocked
 
 ## Example Configurations
 
@@ -427,70 +424,70 @@ When a mode attempts to edit a file that doesn't match its `fileRegex` pattern, 
 
 ```yaml
 customModes:
-  - slug: docs-writer
-    name: 📝 Documentation Writer
-    description: Specialized for writing and editing technical documentation
-    roleDefinition: You are a technical writer specializing in clear documentation
-    groups:
-      - read
-      - - edit
-        - fileRegex: \.md$
-          description: Markdown files only
-    customInstructions: Focus on clear explanations and examples
+    - slug: docs-writer
+      name: 📝 Documentation Writer
+      description: Specialized for writing and editing technical documentation
+      roleDefinition: You are a technical writer specializing in clear documentation
+      groups:
+          - read
+          - - edit
+            - fileRegex: \.md$
+              description: Markdown files only
+      customInstructions: Focus on clear explanations and examples
 ```
 
 ### Test Engineer with File Restrictions (YAML)
 
 ```yaml
 customModes:
-  - slug: test-engineer
-    name: 🧪 Test Engineer
-    description: Focused on writing and maintaining test suites
-    roleDefinition: You are a test engineer focused on code quality
-    whenToUse: Use for writing tests, debugging test failures, and improving test coverage
-    groups:
-      - read
-      - - edit
-        - fileRegex: \.(test|spec)\.(js|ts)$
-          description: Test files only
-      - command
+    - slug: test-engineer
+      name: 🧪 Test Engineer
+      description: Focused on writing and maintaining test suites
+      roleDefinition: You are a test engineer focused on code quality
+      whenToUse: Use for writing tests, debugging test failures, and improving test coverage
+      groups:
+          - read
+          - - edit
+            - fileRegex: \.(test|spec)\.(js|ts)$
+              description: Test files only
+          - command
 ```
 
 ### Security Review Mode (YAML)
 
 ```yaml
 customModes:
-  - slug: security-review
-    name: 🔒 Security Reviewer
-    description: Read-only security analysis and vulnerability assessment
-    roleDefinition: You are a security specialist reviewing code for vulnerabilities
-    whenToUse: Use for security reviews and vulnerability assessments
-    customInstructions: |-
-      Focus on:
-      - Input validation issues
-      - Authentication and authorization flaws
-      - Data exposure risks
-      - Injection vulnerabilities
-    groups:
-      - read
-      - browser
+    - slug: security-review
+      name: 🔒 Security Reviewer
+      description: Read-only security analysis and vulnerability assessment
+      roleDefinition: You are a security specialist reviewing code for vulnerabilities
+      whenToUse: Use for security reviews and vulnerability assessments
+      customInstructions: |-
+          Focus on:
+          - Input validation issues
+          - Authentication and authorization flaws
+          - Data exposure risks
+          - Injection vulnerabilities
+      groups:
+          - read
+          - browser
 ```
 
 ## Troubleshooting
 
 ### Common Issues
 
-- **Mode not appearing:** After creating or importing a mode, you may need to reload the VS Code window
-- **Invalid regex patterns:** Test your patterns using online regex testers before applying them
-- **Precedence confusion:** Remember that project modes completely override global modes with the same slug
-- **YAML syntax errors:** Use proper indentation (spaces, not tabs) and validate your YAML
+-   **Mode not appearing:** After creating or importing a mode, you may need to reload the VS Code window
+-   **Invalid regex patterns:** Test your patterns using online regex testers before applying them
+-   **Precedence confusion:** Remember that project modes completely override global modes with the same slug
+-   **YAML syntax errors:** Use proper indentation (spaces, not tabs) and validate your YAML
 
 ### Tips for Working with YAML
 
-- **Indentation is Key:** YAML uses indentation (spaces, not tabs) to define structure
-- **Colons for Key-Value Pairs:** Keys must be followed by a colon and a space (e.g., `slug: my-mode`)
-- **Hyphens for List Items:** List items start with a hyphen and a space (e.g., `- read`)
-- **Validate Your YAML:** Use online YAML validators or your editor's built-in validation
+-   **Indentation is Key:** YAML uses indentation (spaces, not tabs) to define structure
+-   **Colons for Key-Value Pairs:** Keys must be followed by a colon and a space (e.g., `slug: my-mode`)
+-   **Hyphens for List Items:** List items start with a hyphen and a space (e.g., `- read`)
+-   **Validate Your YAML:** Use online YAML validators or your editor's built-in validation
 
 ## Community Gallery
 

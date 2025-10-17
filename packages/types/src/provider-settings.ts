@@ -12,8 +12,10 @@ import {
 	doubaoModels,
 	featherlessModels,
 	fireworksModels,
-	syntheticModels, // kilocode_change
-	geminiModels,
+	// kilocode_change start
+	syntheticModels,
+	// geminiModels,
+	// kilocode_change end
 	groqModels,
 	ioIntelligenceModels,
 	mistralModels,
@@ -27,6 +29,7 @@ import {
 	xaiModels,
 	internationalZAiModels,
 } from "./providers/index.js"
+import { toolUseStylesSchema } from "./kilocode/native-function-calling.js"
 
 /**
  * constants
@@ -49,6 +52,7 @@ export const dynamicProviders = [
 	"kilocode-openrouter",
 	"ovhcloud",
 	"chutes",
+	"gemini",
 	// kilocode_change end
 	"deepinfra",
 	"io-intelligence",
@@ -195,6 +199,12 @@ const baseProviderSettingsSchema = z.object({
 
 	// Model verbosity.
 	verbosity: verbosityLevelsSchema.optional(),
+
+	// kilocode_change start
+	// Tool style - xml (legacy) or json (modern).
+	// Default to XML for anywhere not specified.
+	toolStyle: toolUseStylesSchema.optional(),
+	// kilocode_change end
 })
 
 // Several of the providers share common model config properties.
@@ -717,7 +727,18 @@ export const getApiProtocol = (
  */
 
 export const MODELS_BY_PROVIDER: Record<
-	Exclude<ProviderName, "fake-ai" | "human-relay" | "gemini-cli" | "lmstudio" | "openai" | "ollama" | "codebuff">,
+	Exclude<
+		ProviderName,
+		| "fake-ai"
+		| "human-relay"
+		// kilocode_change start
+		| "gemini"
+		| "gemini-cli"
+		// kilocode_change end
+		| "lmstudio"
+		| "openai"
+		| "ollama"
+	>,
 	{ id: ProviderName; label: string; models: string[] }
 > = {
 	anthropic: {
@@ -763,12 +784,12 @@ export const MODELS_BY_PROVIDER: Record<
 		label: "Synthetic",
 		models: Object.keys(syntheticModels),
 	},
+	//gemini: {
+	//	id: "gemini",
+	//	label: "Google Gemini",
+	//	models: Object.keys(geminiModels),
+	//},
 	// kilocode_change end
-	gemini: {
-		id: "gemini",
-		label: "Google Gemini",
-		models: Object.keys(geminiModels),
-	},
 	groq: { id: "groq", label: "Groq", models: Object.keys(groqModels) },
 	"io-intelligence": {
 		id: "io-intelligence",

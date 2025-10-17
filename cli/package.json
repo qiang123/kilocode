@@ -51,7 +51,7 @@
 		"commander": "^12.1.0",
 		"default-shell": "^2.2.0",
 		"delay": "^6.0.0",
-		"diff": "^5.2.0",
+		"diff": "^7.0.0",
 		"diff-match-patch": "^1.0.5",
 		"dotenv": "^16.4.7",
 		"eventemitter3": "^5.0.1",

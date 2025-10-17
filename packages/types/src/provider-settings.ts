@@ -738,6 +738,7 @@ export const MODELS_BY_PROVIDER: Record<
 		| "lmstudio"
 		| "openai"
 		| "ollama"
+		| "codebuff"
 	>,
 	{ id: ProviderName; label: string; models: string[] }
 > = {

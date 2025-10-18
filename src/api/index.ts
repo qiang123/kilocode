@@ -47,6 +47,7 @@ import {
 	VercelAiGatewayHandler,
 	DeepInfraHandler,
 	OVHcloudAIEndpointsHandler, // kilocode_change
+	CodebuffHandler,
 } from "./providers"
 // kilocode_change start
 import { KilocodeOpenrouterHandler } from "./providers/kilocode-openrouter"
@@ -206,8 +207,10 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 		case "ovhcloud":
 			return new OVHcloudAIEndpointsHandler(options)
 		// kilocode_change end
+		case "codebuff":
+			return new CodebuffHandler(options)
 		default:
-			apiProvider satisfies "gemini-cli" | "codebuff" | undefined
+			apiProvider satisfies "gemini-cli" | undefined
 			return new AnthropicHandler(options)
 	}
 }

@@ -1271,7 +1271,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 		// This ensures the first message is not read, future user messages are
 		// labeled as `user_feedback`.
 		if (lastMessage && messages.length > 1) {
-			console.log("debug.....", lastMessage.text, typeof lastMessage.text)
+			console.log("debug.....xxxx", lastMessage.text, typeof lastMessage.text)
 			if (
 				lastMessage.text && // has text
 				(lastMessage.say === "text" || lastMessage.say === "completion_result") && // is a text message

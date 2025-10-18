@@ -321,7 +321,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	// kilocode_change: Codebuff SDK integration
 	private codebuffClient?: CodebuffClient
 	private codebuffRunState?: RunState
-	private useCodebuffSdk: boolean = true
+	private useCodebuffSdk: boolean = false
 
 	constructor({
 		context, // kilocode_change
@@ -380,6 +380,8 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		this.apiConfiguration = apiConfiguration
 		this.api = buildApiHandler(apiConfiguration)
 		this.autoApprovalHandler = new AutoApprovalHandler()
+
+		provider.log(`api ${apiConfiguration.codebuffApiKey}  ${apiConfiguration.codebuffModelId}`)
 
 		this.urlContentFetcher = new UrlContentFetcher(provider.context)
 		this.browserSession = new BrowserSession(provider.context)
@@ -447,7 +449,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		}
 
 		// kilocode_change: Initialize Codebuff SDK if enabled
-		this.initializeCodebuffSdk(apiConfiguration)
+		// this.initializeCodebuffSdk(apiConfiguration)
 
 		onCreated?.(this)
 
@@ -471,7 +473,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// This could be controlled by a setting or environment variable
 		// const useCodebuff = process.env.USE_CODEBUFF_SDK === "true" || (apiConfiguration as any).useCodebuffSdk === true
 
-		const useCodebuff = true
+		const useCodebuff = false
 
 		if (useCodebuff) {
 			try {
@@ -2079,18 +2081,18 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				await this.diffViewProvider.reset()
 
 				// kilocode_change start: Use Codebuff SDK if enabled
-				if (this.useCodebuffSdk && this.codebuffClient) {
-					try {
-						await this.attemptCodebuffApiRequest()
-						// After Codebuff SDK completes, continue with normal flow
-						// The conversation history has been updated by attemptCodebuffApiRequest
-						continue
-					} catch (error) {
-						console.error("[Task] Codebuff SDK failed, falling back to standard API:", error)
-						// Fall through to use standard API as fallback
-						this.useCodebuffSdk = false
-					}
-				}
+				// if (this.useCodebuffSdk && this.codebuffClient) {
+				// 	try {
+				// 		await this.attemptCodebuffApiRequest()
+				// 		// After Codebuff SDK completes, continue with normal flow
+				// 		// The conversation history has been updated by attemptCodebuffApiRequest
+				// 		continue
+				// 	} catch (error) {
+				// 		console.error("[Task] Codebuff SDK failed, falling back to standard API:", error)
+				// 		// Fall through to use standard API as fallback
+				// 		this.useCodebuffSdk = false
+				// 	}
+				// }
 				// kilocode_change end
 
 				// Yields only if the first chunk is successful, otherwise will
@@ -2905,7 +2907,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// requests — even from new subtasks — will honour the provider's rate-limit.
 		Task.lastGlobalApiRequestTime = performance.now() // kilocode_change
 
-		const systemPrompt = await this.getSystemPrompt()
+		const systemPrompt = "" //await this.getSystemPrompt()
 		this.lastUsedInstructions = systemPrompt
 		const { contextTokens } = this.getTokenUsage()
 

@@ -2,8 +2,8 @@ import type { ModelInfo } from "../model.js"
 
 // https://docs.litellm.ai/
 
-export type codebuffModelId = "mars/oss-model-base@0.0.1"
-export const codebuffDefaultModelId = "mars/oss-model-base@0.0.1"
+export type codebuffModelId = "base"
+export const codebuffDefaultModelId = "base"
 
 export const codebuffDefaultModelInfo: ModelInfo = {
 	maxTokens: 8192,
@@ -20,7 +20,7 @@ export const codebuffDefaultModelInfo: ModelInfo = {
 export const CODEBUFF_COMPUTER_USE_MODELS = new Set([])
 
 export const codebuffModels = {
-	"mars/oss-model-base@0.0.1": {
+	base: {
 		maxTokens: 65_536,
 		contextWindow: 1_000_000,
 		supportsImages: false,

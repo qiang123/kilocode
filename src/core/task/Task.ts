@@ -10,8 +10,6 @@ import pWaitFor from "p-wait-for"
 import { serializeError } from "serialize-error"
 
 // kilocode_change: Import Codebuff SDK
-import { CodebuffClient } from "../../../../sdk/src/index"
-import type { RunState, PrintModeEvent } from "../../../../sdk/src/index"
 import { getAllCodebuffTools, type ToolExecutionContext } from "../tools/codebuff-tool-converter"
 
 import {
@@ -41,7 +39,6 @@ import {
 	isResumableAsk,
 	QueuedMessage,
 	getActiveToolUseStyle, // kilocode_change
-	codebuffDefaultModelId,
 } from "@roo-code/types"
 import { TelemetryService } from "@roo-code/telemetry"
 import { CloudService, BridgeOrchestrator } from "@roo-code/cloud"
@@ -318,11 +315,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	private tokenUsageSnapshot?: TokenUsage
 	private tokenUsageSnapshotAt?: number
 
-	// kilocode_change: Codebuff SDK integration
-	private codebuffClient?: CodebuffClient
-	private codebuffRunState?: RunState
-	private useCodebuffSdk: boolean = false
-
 	constructor({
 		context, // kilocode_change
 		provider,
@@ -381,7 +373,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		this.api = buildApiHandler(apiConfiguration)
 		this.autoApprovalHandler = new AutoApprovalHandler()
 
-		provider.log(`api ${apiConfiguration.codebuffApiKey}  ${apiConfiguration.codebuffModelId}`)
+		// provider.log(`api ${apiConfiguration.codebuffApiKey}  ${apiConfiguration.codebuffModelId}`)
 
 		this.urlContentFetcher = new UrlContentFetcher(provider.context)
 		this.browserSession = new BrowserSession(provider.context)
@@ -448,9 +440,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			this.todoList = initialTodos
 		}
 
-		// kilocode_change: Initialize Codebuff SDK if enabled
-		// this.initializeCodebuffSdk(apiConfiguration)
-
 		onCreated?.(this)
 
 		if (startTask) {
@@ -463,68 +452,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			}
 		}
 	}
-
-	// kilocode_change start: Codebuff SDK initialization
-	private initializeCodebuffSdk(apiConfiguration: ProviderSettings): void {
-		const provider = this.providerRef.deref()
-		process.env.NEXT_PUBLIC_CB_ENVIRONMENT = "dev"
-		provider?.log(`initialize codebuf client: ${apiConfiguration.codebuffApiKey}`)
-		// Check if we should use Codebuff SDK based on configuration
-		// This could be controlled by a setting or environment variable
-		// const useCodebuff = process.env.USE_CODEBUFF_SDK === "true" || (apiConfiguration as any).useCodebuffSdk === true
-
-		const useCodebuff = false
-
-		if (useCodebuff) {
-			try {
-				const apiKey = process.env.CODEBUFF_API_KEY || (apiConfiguration as any).codebuffApiKey
-				if (apiKey) {
-					this.codebuffClient = new CodebuffClient({
-						apiKey,
-						cwd: this.cwd,
-						handleEvent: this.handleCodebuffEvent.bind(this),
-					})
-					this.useCodebuffSdk = true
-					provider?.log("[Task] Codebuff SDK initialized successfully")
-					console.log("[Task] Codebuff SDK initialized successfully")
-				} else {
-					provider?.log("[Task] Codebuff SDK enabled but no API key found")
-					console.warn("[Task] Codebuff SDK enabled but no API key found")
-				}
-			} catch (error) {
-				provider?.log(`[Task] Failed to initialize Codebuff SDK:${error}`)
-				console.error("[Task] Failed to initialize Codebuff SDK:", error)
-
-				this.useCodebuffSdk = false
-			}
-		}
-	}
-
-	private async handleCodebuffEvent(event: PrintModeEvent): Promise<void> {
-		// Convert Codebuff SDK events to Task events
-		switch (event.type) {
-			case "error":
-				await this.say("error", event.message)
-				break
-			case "tool_call":
-				// Handle tool call events - display as text with tool information
-				if (event.toolName && event.input) {
-					const toolInfo = `🔧 Tool: ${event.toolName}\n${JSON.stringify(event.input, null, 2)}`
-					await this.say("text", toolInfo)
-				}
-				break
-			case "text":
-				// Handle assistant message events
-				if (event.text) {
-					await this.say("text", event.text)
-				}
-				break
-			default:
-				// Log unhandled event types for debugging
-				console.log("[Task] Unhandled Codebuff SDK event:", event)
-		}
-	}
-	// kilocode_change end
 
 	// kilocode_change start
 	private getContext(): vscode.ExtensionContext {
@@ -2080,21 +2007,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 
 				await this.diffViewProvider.reset()
 
-				// kilocode_change start: Use Codebuff SDK if enabled
-				// if (this.useCodebuffSdk && this.codebuffClient) {
-				// 	try {
-				// 		await this.attemptCodebuffApiRequest()
-				// 		// After Codebuff SDK completes, continue with normal flow
-				// 		// The conversation history has been updated by attemptCodebuffApiRequest
-				// 		continue
-				// 	} catch (error) {
-				// 		console.error("[Task] Codebuff SDK failed, falling back to standard API:", error)
-				// 		// Fall through to use standard API as fallback
-				// 		this.useCodebuffSdk = false
-				// 	}
-				// }
-				// kilocode_change end
-
 				// Yields only if the first chunk is successful, otherwise will
 				// allow the user to retry the request (most likely due to rate
 				// limit error, which gets thrown on the first chunk).
@@ -3025,6 +2937,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			// KiloCode-specific: pass projectId for backend tracking (ignored by other providers)
 			projectId: (await kiloConfig)?.project?.id,
 			// kilocode_change end
+			cwd: this.cwd,
 		}
 
 		// kilocode_change start
@@ -3185,92 +3098,6 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 		// stream.
 		yield* iterator
 	}
-
-	// kilocode_change start: Codebuff SDK API request method
-	/**
-	 * Attempt an API request using Codebuff SDK instead of direct API calls.
-	 * This method provides an alternative to attemptApiRequest() that uses
-	 * the Codebuff agent system for more sophisticated task handling.
-	 */
-	public async attemptCodebuffApiRequest(): Promise<void> {
-		if (!this.codebuffClient || !this.useCodebuffSdk) {
-			throw new Error("Codebuff SDK is not initialized. Use attemptApiRequest() instead.")
-		}
-
-		const state = await this.providerRef.deref()?.getState()
-		const { mode } = state ?? {}
-
-		try {
-			// Get the last user message from conversation history
-			const lastUserMessage = this.apiConversationHistory.filter((msg) => msg.role === "user").pop()
-
-			if (!lastUserMessage) {
-				throw new Error("No user message found in conversation history")
-			}
-
-			// Convert message content to prompt string
-			let prompt = ""
-			if (Array.isArray(lastUserMessage.content)) {
-				prompt = lastUserMessage.content
-					.filter((block) => block.type === "text")
-					.map((block) => (block as any).text)
-					.join("\n\n")
-			} else if (typeof lastUserMessage.content === "string") {
-				prompt = lastUserMessage.content
-			}
-
-			// Get system prompt for context
-			const systemPrompt = await this.getSystemPrompt()
-
-			// Prepare project files for Codebuff SDK
-			const projectFiles: Record<string, string> = {}
-			// TODO: Implement file collection logic based on fileContextTracker
-
-			// Create tool execution context
-			const toolContext: ToolExecutionContext = {
-				task: this,
-			}
-
-			// Get all Codebuff tool definitions
-			const customToolDefinitions = getAllCodebuffTools(toolContext)
-
-			// Run Codebuff agent
-			await this.say(
-				"text",
-				`Using Codebuff Agent[${this.apiConfiguration.codebuffModelId}] for enhanced task handling...`,
-			)
-
-			const runResult = await this.codebuffClient.run({
-				agent: this.apiConfiguration.codebuffModelId || codebuffDefaultModelId || "base",
-				prompt: prompt,
-				previousRun: this.codebuffRunState,
-				projectFiles,
-				knowledgeFiles: {
-					"system-prompt.md": systemPrompt,
-				},
-				customToolDefinitions,
-				handleEvent: this.handleCodebuffEvent.bind(this),
-			})
-
-			// Store the run state for continuation
-			this.codebuffRunState = runResult
-
-			// Extract output and add to conversation history
-			if (runResult.output) {
-				await this.addToApiConversationHistory({
-					role: "assistant",
-					content: [{ type: "text", text: runResult.output }],
-				})
-
-				await this.say("text", runResult.output)
-			}
-		} catch (error) {
-			console.error("[Task] Codebuff SDK request failed:", error)
-			await this.say("error", `Codebuff SDK error: ${error instanceof Error ? error.message : String(error)}`)
-			throw error
-		}
-	}
-	// kilocode_change end
 
 	// Checkpoints
 

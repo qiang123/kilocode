@@ -89,6 +89,7 @@ export interface ApiHandlerCreateMessageMetadata {
 	 */
 	projectId?: string
 	// kilocode_change end
+	cwd?: string
 }
 
 export interface ApiHandler {
@@ -129,6 +130,8 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 			return new AnthropicHandler(options)
 		case "claude-code":
 			return new ClaudeCodeHandler(options)
+		case "codebuff":
+			return new CodebuffHandler(options)
 		case "glama":
 			return new GlamaHandler(options)
 		case "openrouter":
@@ -207,10 +210,7 @@ export function buildApiHandler(configuration: ProviderSettings): ApiHandler {
 		case "ovhcloud":
 			return new OVHcloudAIEndpointsHandler(options)
 		// kilocode_change end
-		case "codebuff":
-			return new CodebuffHandler(options)
 		default:
-			apiProvider satisfies "gemini-cli" | undefined
 			return new AnthropicHandler(options)
 	}
 }

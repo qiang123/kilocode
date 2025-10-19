@@ -54,6 +54,7 @@ export class CodebuffHandler extends BaseProvider implements ApiHandler {
 			const runPromise = this.client
 				.run({
 					agent: this.options.codebuffModelId || "base",
+					cwd: metadata?.cwd,
 					prompt,
 					handleStreamChunk: async (chunk: string) => {
 						// Handle streaming text chunks

@@ -699,10 +699,7 @@ export const modelIdKeysByProvider: Record<TypicalProvider, ModelIdKey> = {
 // Providers that use Anthropic-style API protocol.
 export const ANTHROPIC_STYLE_PROVIDERS: ProviderName[] = ["anthropic", "claude-code", "bedrock"]
 
-export const getApiProtocol = (
-	provider: ProviderName | undefined,
-	modelId?: string,
-): "anthropic" | "openai" | "codebuff" => {
+export const getApiProtocol = (provider: ProviderName | undefined, modelId?: string): "anthropic" | "openai" => {
 	if (provider && ANTHROPIC_STYLE_PROVIDERS.includes(provider)) {
 		return "anthropic"
 	}
@@ -714,9 +711,6 @@ export const getApiProtocol = (
 	// Vercel AI Gateway uses anthropic protocol for anthropic models.
 	if (provider && provider === "vercel-ai-gateway" && modelId && modelId.toLowerCase().startsWith("anthropic/")) {
 		return "anthropic"
-	}
-	if (provider && provider === "codebuff") {
-		return "codebuff"
 	}
 
 	return "openai"

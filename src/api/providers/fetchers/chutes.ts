@@ -51,11 +51,11 @@ const chutesModelSchema = z.object({
 	input_modalities: z.array(z.string()).optional(),
 	max_output_length: z.number().optional(),
 	output_modalities: z.array(z.string()).optional(),
-	supported_features: z.union([z.array(z.string()), z.record(z.any())]).optional(),
+	supported_features: z.union([z.array(z.string()), z.record(z.string(), z.any())]).optional(),
 	supported_sampling_parameters: z.array(z.string()).optional(),
 	parent: z.string().optional().nullable(),
 	permission: z.array(z.any()).optional(),
-	sampling_params: z.record(z.any()).optional(),
+	sampling_params: z.record(z.string(), z.any()).optional(),
 })
 
 export type ChutesModel = z.infer<typeof chutesModelSchema>

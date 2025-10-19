@@ -811,6 +811,7 @@ export const webviewMessageHandler = async (
 				ollama: {},
 				lmstudio: {},
 				ovhcloud: {}, // kilocode_change
+				codebuff: {},
 			}
 
 			const safeGetModels = async (options: GetModelsOptions): Promise<ModelRecord> => {

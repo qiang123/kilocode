@@ -19,7 +19,7 @@ import { getGlamaModels } from "./glama"
 import { getUnboundModels } from "./unbound"
 import { getLiteLLMModels } from "./litellm"
 import { GetModelsOptions } from "../../../shared/api"
-import { getKiloBaseUriFromToken } from "@roo-code/types"
+import { codebuffModels, getKiloBaseUriFromToken } from "@roo-code/types"
 import { getOllamaModels } from "./ollama"
 import { getLMStudioModels } from "./lmstudio"
 import { getIOIntelligenceModels } from "./io-intelligence"
@@ -135,6 +135,9 @@ export const getModels = async (options: GetModelsOptions): Promise<ModelRecord>
 			// kilocode_change start
 			case "ovhcloud":
 				models = await getOvhCloudAiEndpointsModels()
+				break
+			case "codebuff":
+				models = codebuffModels
 				break
 			// kilocode_change end
 			default: {

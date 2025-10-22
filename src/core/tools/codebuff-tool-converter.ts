@@ -538,3 +538,29 @@ export function getCodebuffToolsByNames(context: ToolExecutionContext, toolNames
 	const allTools = getAllCodebuffTools(context)
 	return allTools.filter((tool) => toolNames.includes(tool.toolName))
 }
+
+// /**
+//  * Collect all agent IDs from template files without full validation
+//  */
+// export function collectSpawnableAgents(agentIds: string[], agentTemplates: Record<string, any>):
+//  Record<string, any> {
+//   const spawnableAgents:Record<string, any> = {}
+//   const vistedIds = new Set(agentIds)
+//   while(agentIds.length > 0) {
+//     const filePath = agentIds.pop()!
+//     const content = agentTemplates[filePath];
+//     if (content){
+//        spawnableAgents[filePath] = content
+//       if (Array.isArray(content.spawnableAgents)) {
+//         for (const agentId of content.spawnableAgents) {
+//             if (!vistedIds.has(agentId)) {
+//                 vistedIds.add(agentId);
+//                 agentIds.push(agentId);
+//             }
+//         }
+//       }
+//     }
+//   }
+
+//   return spawnableAgents
+// }

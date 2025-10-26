@@ -8,7 +8,6 @@ packages:
     - jetbrains/plugin
     - ../common
     - ../sdk
-    - ../packages
 
 onlyBuiltDependencies:
     - "@tailwindcss/oxide"

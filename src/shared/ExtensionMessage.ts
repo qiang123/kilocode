@@ -462,7 +462,9 @@ export interface ClineSayTool {
 		| "generateImage"
 		| "imageGenerated"
 		| "runSlashCommand"
+		| "readFiles"
 	path?: string
+	filePaths?: string[]
 	diff?: string
 	content?: string
 	regex?: string
@@ -482,9 +484,9 @@ export interface ClineSayTool {
 	query?: string
 	batchFiles?: Array<{
 		path: string
-		lineSnippet: string
+		lineSnippet?: string
 		isOutsideWorkspace?: boolean
-		key: string
+		key?: string
 		content?: string
 	}>
 	batchDiffs?: Array<{

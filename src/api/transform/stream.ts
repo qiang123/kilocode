@@ -1,4 +1,4 @@
-import { ApiStreamNativeToolCallsChunk } from "./kilocode/api-stream-native-tool-calls-chunk"
+import { ApiStreamNativeToolCallsChunk, ApiStreamToolCallChunk } from "./kilocode/api-stream-native-tool-calls-chunk"
 
 export type ApiStream = AsyncGenerator<ApiStreamChunk>
 
@@ -6,6 +6,7 @@ export type ApiStreamChunk =
 	| ApiStreamTextChunk
 	| ApiStreamUsageChunk
 	| ApiStreamNativeToolCallsChunk // kilocode_change
+	| ApiStreamToolCallChunk
 	| ApiStreamReasoningChunk
 	| ApiStreamGroundingChunk
 	| ApiStreamError

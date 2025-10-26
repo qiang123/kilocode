@@ -10,3 +10,15 @@ export interface ApiStreamNativeToolCallsChunk {
 		}
 	}>
 }
+
+export interface ApiStreamToolCallChunk {
+	type: "tool_call"
+	toolCall: {
+		toolCallId?: string // Only present in first delta
+		toolName?: string
+		type?: string
+		input: Record<string, any>
+		agentId?: string
+		parentAgentId?: string
+	}
+}

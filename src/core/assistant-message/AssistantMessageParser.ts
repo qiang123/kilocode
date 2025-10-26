@@ -2,6 +2,7 @@ import { type ToolName, toolNames } from "@roo-code/types"
 import { TextContent, ToolUse, ToolParamName, toolParamNames } from "../../shared/tools"
 import { AssistantMessageContent } from "./parseAssistantMessage"
 import { NativeToolCall, parseDoubleEncodedParams } from "./kilocode/native-tool-call"
+import { PrintModeToolCall } from "@codebuff/sdk"
 
 /**
  * Parser for assistant messages. Maintains state between chunks
@@ -25,6 +26,7 @@ export class AssistantMessageParser {
 	// Map index to id for tracking across streaming deltas
 	private nativeToolCallIndexToId: Map<number, string> = new Map()
 	// kilocode_change end
+	private processedToolCallIds: Set<string> = new Set()
 
 	private accumulator = ""
 
@@ -199,6 +201,56 @@ export class AssistantMessageParser {
 		}
 	}
 	// kilocode_change end
+
+	public processToolCalls(toolCall: PrintModeToolCall): void {
+		// Determine the tracking key
+		// If we have an index, use that to look up or store the id
+		// Otherwise use the id directly (for non-streaming or first delta)
+		let toolCallId: string
+
+		// Check if we've seen this index before
+		toolCallId = toolCall.toolCallId
+
+		// Check if we've already processed this tool call
+		if (this.processedToolCallIds.has(toolCallId)) {
+			console.log("[AssistantMessageParser] Tool call already processed:", toolCallId)
+		}
+
+		// First delta: has function name (initialize accumulator)
+		if (toolCall.toolName) {
+			const toolName = toolCall.toolName
+			// Validate that this is a recognized tool name
+			if (!toolNames.includes(toolName as ToolName)) {
+				console.warn("[AssistantMessageParser] Unknown tool name in call:", toolName)
+			}
+		}
+
+		// Try to parse the arguments - if successful, the tool call is complete
+		let isComplete = true
+
+		// Tool call is complete - convert it to ToolUse format
+		if (isComplete) {
+			const toolName = toolCall.toolName
+			// Finalize any current text content before adding tool use
+			if (this.currentTextContent) {
+				this.currentTextContent.partial = false
+				this.currentTextContent = undefined
+			}
+
+			// Create a ToolUse block from the native tool call
+			const toolUse: ToolUse = {
+				type: "tool_use",
+				name: toolName as ToolName,
+				params: toolCall.input || {},
+				partial: false, // Now complete after accumulation
+			}
+
+			// Add the tool use to content blocks
+			this.contentBlocks.push(toolUse)
+
+			this.processedToolCallIds.add(toolCallId)
+		}
+	}
 
 	/**
 	 * Process a new chunk of text and update the parser state.

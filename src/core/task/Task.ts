@@ -10,7 +10,7 @@ import pWaitFor from "p-wait-for"
 import { serializeError } from "serialize-error"
 
 // kilocode_change: Import Codebuff SDK
-import { getAllCodebuffTools, type ToolExecutionContext } from "../tools/codebuff-tool-converter"
+import { getOveridesCodebuffTools, type ToolExecutionContext } from "../tools/codebuff-tool-overrides"
 
 import {
 	type TaskLike,
@@ -2079,9 +2079,29 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 								presentAssistantMessage(this)
 								break
 							}
+
+							case "tool_call": {
+								// Handle native OpenAI-format tool calls
+								// Process native tool calls through the parser
+								this.assistantMessageParser.processToolCalls(chunk.toolCall)
+
+								// Update content blocks after processing native tool calls
+								const prevLength = this.assistantMessageContent.length
+								this.assistantMessageContent = this.assistantMessageParser.getContentBlocks()
+
+								if (this.assistantMessageContent.length > prevLength) {
+									// New content we need to present
+									this.userMessageContentReady = false
+								}
+
+								// Present content to user
+								presentAssistantMessage(this)
+								break
+							}
 							//kilocode_change end
 							case "text": {
 								assistantMessage += chunk.text
+								console.log("text chunk:", chunk.text)
 
 								// Parse raw assistant message chunk into content blocks.
 								const prevLength = this.assistantMessageContent.length
@@ -2938,6 +2958,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 			projectId: (await kiloConfig)?.project?.id,
 			// kilocode_change end
 			cwd: this.cwd,
+			overidesTools: getOveridesCodebuffTools({ task: this }),
 		}
 
 		// kilocode_change start

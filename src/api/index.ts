@@ -53,6 +53,7 @@ import {
 import { KilocodeOpenrouterHandler } from "./providers/kilocode-openrouter"
 // kilocode_change end
 import { NativeOllamaHandler } from "./providers/native-ollama"
+import { CodebuffClientOptions } from "../../../sdk/src"
 
 export interface SingleCompletionHandler {
 	completePrompt(prompt: string): Promise<string>
@@ -90,6 +91,7 @@ export interface ApiHandlerCreateMessageMetadata {
 	projectId?: string
 	// kilocode_change end
 	cwd?: string
+	overidesTools?: CodebuffClientOptions["overrideTools"]
 }
 
 export interface ApiHandler {

@@ -74,6 +74,38 @@ export const toolParamNames = [
 	"todos",
 	"prompt",
 	"image",
+	//
+	"role",
+	"content",
+	// code search, glob
+	"pattern",
+	"flags",
+	"cwd",
+	"maxResults",
+	// read files
+	"paths",
+	// create plan, list directory
+	"path",
+	"plan",
+	//find files
+	"prompt",
+	//read files
+	"path",
+	"content",
+	"referencedBy",
+	"contentOmittedForLength",
+	// run terminal command
+	"command",
+	"startingCwd",
+	"message",
+	"stderr",
+	"stdout",
+	"exitCode",
+	"stdoutOmittedForLength",
+	"backgroundProcessStatus",
+	"errorMessage",
+	"messages",
+	"agent_type",
 ] as const
 
 export type ToolParamName = (typeof toolParamNames)[number]
@@ -201,6 +233,14 @@ export type ToolGroupConfig = {
 	alwaysAvailable?: boolean // Whether this group is always available and shouldn't show in prompts view
 }
 
+export interface EndTurnToolUse extends ToolUse {
+	type: "tool_use"
+	name: "end_turn"
+	// params is a partial record, allowing only some or none of the possible parameters to be used
+	params: Partial<Record<ToolParamName, string>>
+	partial: boolean
+}
+
 export const TOOL_DISPLAY_NAMES: Record<ToolName, string> = {
 	execute_command: "run commands",
 	read_file: "read files",
@@ -227,6 +267,24 @@ export const TOOL_DISPLAY_NAMES: Record<ToolName, string> = {
 	update_todo_list: "update todo list",
 	run_slash_command: "run slash command",
 	generate_image: "generate images",
+	code_search: "code search",
+	end_turn: "end turn",
+	find_files: "find files",
+	glob: "glob",
+	list_directory: "list directory",
+	lookup_agent_info: "lookup agent info",
+	read_docs: "read docs",
+	read_files: "read files",
+	run_file_change_hooks: "run file change hooks",
+	run_terminal_command: "run terminal command",
+	set_messages: "set messages",
+	set_output: "set output",
+	spawn_agents: "spawn agents",
+	spawn_agent_inline: "spawn agent inline",
+	str_replace: "str replace",
+	think_deeply: "think deeply",
+	web_search: "web search",
+	write_file: "write file",
 } as const
 
 // Define available tool groups.
@@ -239,6 +297,14 @@ export const TOOL_GROUPS: Record<ToolGroup, ToolGroupConfig> = {
 			"list_files",
 			"list_code_definition_names",
 			"codebase_search",
+			//
+			"read_files",
+			"find_files",
+			"glob",
+			"list_directory",
+			"code_search",
+			"read_docs",
+			"web_search",
 		],
 	},
 	edit: {
@@ -250,13 +316,16 @@ export const TOOL_GROUPS: Record<ToolGroup, ToolGroupConfig> = {
 			"search_and_replace",
 			"new_rule", // kilocode_change
 			"generate_image",
+			//
+			"str_replace",
+			"write_file",
 		],
 	},
 	browser: {
 		tools: ["browser_action"],
 	},
 	command: {
-		tools: ["execute_command"],
+		tools: ["execute_command", "run_terminal_command", "run_file_change_hooks"],
 	},
 	mcp: {
 		tools: ["use_mcp_tool", "access_mcp_resource"],
@@ -277,6 +346,13 @@ export const ALWAYS_AVAILABLE_TOOLS: ToolName[] = [
 	"condense", // kilocode_Change
 	"update_todo_list",
 	"run_slash_command",
+	//
+	"end_turn",
+	"set_messages",
+	"set_output",
+	"spawn_agents",
+	"spawn_agent_inline",
+	"think_deeply",
 ] as const
 
 export type DiffResult =

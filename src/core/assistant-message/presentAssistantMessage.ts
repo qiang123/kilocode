@@ -5,7 +5,7 @@ import type { ToolName, ClineAsk, ToolProgressStatus } from "@roo-code/types"
 import { TelemetryService } from "@roo-code/telemetry"
 
 import { defaultModeSlug, getModeBySlug } from "../../shared/modes"
-import type { ToolParamName, ToolResponse } from "../../shared/tools"
+import type { AttemptCompletionToolUse, ToolParamName, ToolResponse } from "../../shared/tools"
 
 import { fetchInstructionsTool } from "../tools/fetchInstructionsTool"
 import { listFilesTool } from "../tools/listFilesTool"
@@ -42,6 +42,7 @@ import { codebaseSearchTool } from "../tools/codebaseSearchTool"
 import { experiments, EXPERIMENT_IDS } from "../../shared/experiments"
 import { applyDiffToolLegacy } from "../tools/applyDiffTool"
 import { yieldPromise } from "../kilocode"
+import { partial, result } from "lodash"
 
 /**
  * Processes and presents assistant message content to the user interface.
@@ -244,6 +245,8 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 						return `[${block.name} for '${block.params.command}'${block.params.args ? ` with args: ${block.params.args}` : ""}]`
 					case "generate_image":
 						return `[${block.name} for '${block.params.path}']`
+					default:
+						return `[${block.name}]`
 				}
 			}
 
@@ -394,6 +397,7 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 				)
 			} catch (error) {
 				cline.consecutiveMistakeCount++
+				console.log("Error in validateToolUse:", block.name, error)
 				pushToolResult(formatResponse.toolError(error.message))
 				break
 			}
@@ -440,6 +444,12 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 			}
 
 			await checkpointSaveAndMark(cline) // kilocode_change: moved out of switch
+			switch (block.name) {
+				case "read_files":
+					// await checkpointSaveAndMark(cline) // kilocode_change
+					// await readFilesTool(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
+					break
+			}
 			switch (block.name) {
 				case "write_to_file":
 					// await checkpointSaveAndMark(cline) // kilocode_change
@@ -575,6 +585,24 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 						askFinishSubTaskApproval,
 					)
 					break
+				case "end_turn":
+					const newBlock: AttemptCompletionToolUse = {
+						...block,
+						name: "attempt_completion",
+						partial: false,
+						params: { result: "!" },
+					}
+					await attemptCompletionTool(
+						cline,
+						newBlock,
+						askApproval,
+						handleError,
+						pushToolResult,
+						removeClosingTag,
+						toolDescription,
+						askFinishSubTaskApproval,
+					)
+					break
 				// kilocode_change start
 				case "new_rule":
 					await newRuleTool(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
@@ -593,7 +621,6 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 					await generateImageTool(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
 					break
 			}
-
 			break
 	}
 

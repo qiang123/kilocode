@@ -42,6 +42,25 @@ export const toolNames = [
 	"update_todo_list",
 	"run_slash_command",
 	"generate_image",
+	//
+	"code_search",
+	"end_turn",
+	"find_files",
+	"glob",
+	"list_directory",
+	"lookup_agent_info",
+	"read_docs",
+	"read_files",
+	"run_file_change_hooks",
+	"run_terminal_command",
+	"set_messages",
+	"set_output",
+	"spawn_agents",
+	"spawn_agent_inline",
+	"str_replace",
+	"think_deeply",
+	"web_search",
+	"write_file",
 ] as const
 
 export const toolNamesSchema = z.enum(toolNames)

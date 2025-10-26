@@ -17,7 +17,7 @@ export class CodebuffHandler extends BaseProvider implements ApiHandler {
 		super()
 		this.options = options
 		process.env.NEXT_PUBLIC_CB_ENVIRONMENT = "dev"
-		process.env.NEXT_PUBLIC_CODEBUFF_BACKEND_URL = options.codebuffBaseUrl
+		// process.env.NEXT_PUBLIC_CODEBUFF_BACKEND_URL = options.codebuffBaseUrl
 
 		// Initialize CodebuffClient with API key from options
 		this.client = new CodebuffClient({
@@ -32,7 +32,7 @@ export class CodebuffHandler extends BaseProvider implements ApiHandler {
 	): ApiStream {
 		try {
 			// Convert Anthropic messages to Codebuff format
-			const prompt = this.convertMessagesToPrompt(systemPrompt, messages)
+			const prompt = this.convertMessagesToPrompt("", messages)
 
 			console.log("[CodebuffHandler] Generated prompt:", prompt)
 
@@ -51,78 +51,94 @@ export class CodebuffHandler extends BaseProvider implements ApiHandler {
 			let error: Error | null = null
 
 			// Run Codebuff agent with event handling
-			const runPromise = this.client
-				.run({
-					agent: this.options.codebuffModelId || "base",
-					cwd: metadata?.cwd,
-					prompt,
-					handleStreamChunk: async (chunk: string) => {
-						// Handle streaming text chunks
-						if (chunk) {
+			const runPromise = this.client.run({
+				agent: this.options.codebuffModelId || "base",
+				cwd: metadata?.cwd,
+				prompt,
+				// overrideTools: metadata?.overidesTools,
+				handleStreamChunk: async (chunk: string) => {
+					// Handle streaming text chunks
+					if (chunk) {
+						eventQueue.push({
+							type: "text",
+							text: chunk,
+						})
+						console.log("stream:", chunk)
+					}
+				},
+				handleEvent: (event: PrintModeEvent) => {
+					// Convert Codebuff SDK events to ApiStream events
+					switch (event.type) {
+						case "start":
 							eventQueue.push({
-								type: "text",
-								text: chunk,
+								type: "start",
+								text: JSON.stringify(event, null, 2),
 							})
-						}
-					},
-					handleEvent: (event: PrintModeEvent) => {
-						// Convert Codebuff SDK events to ApiStream events
-						switch (event.type) {
-							case "start":
-								eventQueue.push({
-									type: "start",
-									text: JSON.stringify(event, null, 2),
-								})
-								break
-							case "finish":
-								eventQueue.push({
-									type: "finish",
-									text: JSON.stringify(event, null, 2),
-								})
-								break
+							break
+						case "finish":
+							eventQueue.push({
+								type: "finish",
+								text: JSON.stringify(event, null, 2),
+							})
+							break
 
-							case "error":
+						case "error":
+							eventQueue.push({
+								type: "error",
+								error: event.message || "An unknown error occurred",
+								message: event.message || "An unknown error occurred",
+							})
+							break
+						case "tool_call":
+							// Handle tool call events - display as text with tool information
+							if (event.toolName && event.input) {
+								const toolInfo = `🔧 Tool: ${event.toolName}\n${JSON.stringify(event.input, null, 2)}`
 								eventQueue.push({
-									type: "error",
-									error: event.message || "An unknown error occurred",
-									message: event.message || "An unknown error occurred",
+									type: "tool_call",
+									toolCall: event,
 								})
-								break
-							case "tool_call":
-								// Handle tool call events - display as text with tool information
-								if (event.toolName && event.input) {
-									const toolInfo = `🔧 Tool: ${event.toolName}\n${JSON.stringify(event.input, null, 2)}`
-									eventQueue.push({
-										type: "text",
-										text: toolInfo,
-									})
-								}
-								break
-							case "text":
-								// Handle assistant message events
-								if (event.text) {
-									eventQueue.push({
-										type: "text",
-										text: event.text,
-									})
-								}
-								break
-							case "tool_result":
-								// Handle tool result events
-								if (event.toolCallId) {
-									eventQueue.push({
-										type: "tool",
-										text: JSON.stringify(event, null, 2),
-									})
-								}
-								break
-							default:
-								// Log unhandled event types for debugging
-								console.log("[CodebuffHandler] Unhandled Codebuff SDK event:", event)
-						}
-					},
-					previousRun: this.codebuffRunState,
-				})
+							}
+							break
+						case "text":
+							// Handle assistant message events
+							if (event.text) {
+								// eventQueue.push({
+								// 	type: "text",
+								// 	text: event.text,
+								// })
+							}
+							console.log("hello")
+							break
+						case "tool_result":
+							// Handle tool result events
+							if (event.toolCallId) {
+								// eventQueue.push({
+								// 	type: "tool",
+								// 	text: JSON.stringify(event, null, 2),
+								// })
+							}
+							break
+						default:
+							// Log unhandled event types for debugging
+							console.log("[CodebuffHandler] Unhandled Codebuff SDK event:", event)
+					}
+				},
+				previousRun: this.codebuffRunState,
+			})
+
+			// Yield events as they come in
+			while (!isComplete || eventQueue.length > 0) {
+				if (eventQueue.length > 0) {
+					const event = eventQueue.shift()
+					if (event) {
+						yield event
+					}
+				} else {
+					// Wait a bit before checking again
+					await new Promise((resolve) => setTimeout(resolve, 10))
+				}
+			}
+			runPromise
 				.then((result) => {
 					// Store the run state for continuation
 					this.codebuffRunState = result
@@ -143,19 +159,6 @@ export class CodebuffHandler extends BaseProvider implements ApiHandler {
 					isComplete = true
 					throw err
 				})
-
-			// Yield events as they come in
-			while (!isComplete || eventQueue.length > 0) {
-				if (eventQueue.length > 0) {
-					const event = eventQueue.shift()
-					if (event) {
-						yield event
-					}
-				} else {
-					// Wait a bit before checking again
-					await new Promise((resolve) => setTimeout(resolve, 10))
-				}
-			}
 
 			// Check if there was an error
 			if (error) {

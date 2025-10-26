@@ -660,6 +660,7 @@
 		"@codebuff/common": "workspace:^",
 		"@codebuff/sdk": "workspace:^",
 		"@vscode/codicons": "^0.0.36",
+		"@codebuff/sdk": "workspace:^",
 		"async-mutex": "^0.5.0",
 		"axios": "^1.12.0",
 		"cheerio": "^1.0.0",

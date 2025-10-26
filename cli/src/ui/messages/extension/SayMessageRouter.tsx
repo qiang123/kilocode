@@ -70,6 +70,7 @@ export const SayMessageRouter: React.FC<MessageComponentProps> = ({ message }) =
 			return <SayUserFeedbackDiffMessage message={message} />
 
 		case "completion_result":
+		case "end_turn":
 			return <SayCompletionResultMessage message={message} />
 
 		case "shell_integration_warning":

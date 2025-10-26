@@ -296,6 +296,7 @@ export const ChatRowContent = ({
 					</span>,
 				]
 			case "completion_result":
+			case "end_turn":
 				return [
 					<span
 						className="codicon codicon-check"
@@ -1297,6 +1298,7 @@ export const ChatRowContent = ({
 				case "error":
 					return <ErrorRow type="error" message={message.text || ""} />
 				case "completion_result":
+				case "end_turn":
 					const commitRange = message.metadata?.kiloCode?.commitRange
 					return (
 						<>
@@ -1589,6 +1591,7 @@ export const ChatRowContent = ({
 						</>
 					)
 				case "completion_result":
+				case "end_turn":
 					if (message.text) {
 						return (
 							<div>

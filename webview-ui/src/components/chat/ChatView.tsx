@@ -410,6 +410,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 							setSecondaryButtonText(t("chat:reject.title"))
 							break
 						case "completion_result":
+						case "end_turn":
 							// extension waiting for feedback. but we can just present a new task button
 							if (!isPartial) {
 								playSound("celebration")
@@ -665,6 +666,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						case "command_output": // User can send input to command stdin.
 						case "use_mcp_server":
 						case "completion_result": // If this happens then the user has feedback for the completion result.
+						case "end_turn":
 						case "resume_task":
 						case "resume_completed_task":
 						case "mistake_limit_reached":
@@ -739,6 +741,7 @@ const ChatViewComponent: React.ForwardRefRenderFunction<ChatViewRef, ChatViewPro
 						vscode.postMessage({ type: "askResponse", askResponse: "yesButtonClicked" })
 					}
 					break
+				case "end_turn":
 				case "completion_result":
 				case "resume_completed_task":
 					// Waiting for feedback, but we can just present a new task button

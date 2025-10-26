@@ -45,6 +45,7 @@ export const clineAsks = [
 	"report_bug",
 	"condense",
 	// kilocode_change end
+	"end_turn",
 ] as const
 
 export const clineAskSchema = z.enum(clineAsks)
@@ -173,6 +174,7 @@ export const clineSays = [
 	"condense_context_error",
 	"codebase_search_result",
 	"user_edit_todos",
+	"end_turn",
 ] as const
 
 export const clineSaySchema = z.enum(clineSays)

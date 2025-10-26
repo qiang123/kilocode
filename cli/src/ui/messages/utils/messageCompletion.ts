@@ -65,7 +65,7 @@ function isExtensionMessageComplete(message: ExtensionChatMessage): boolean {
 	// Ask messages completion logic
 	if (message.type === "ask") {
 		// These ask types don't render, so they're immediately complete
-		const nonRenderingAskTypes = ["completion_result", "command_output"]
+		const nonRenderingAskTypes = ["completion_result", "command_output", "end_turn"]
 		if (message.ask && nonRenderingAskTypes.includes(message.ask)) {
 			logs.debug("Ask message complete (non-rendering type)", "messageCompletion", {
 				ts: message.ts,

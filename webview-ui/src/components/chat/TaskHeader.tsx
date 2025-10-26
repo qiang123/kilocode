@@ -67,7 +67,8 @@ const TaskHeader = ({
 						(m) => !(m.ask === "resume_task" || m.ask === "resume_completed_task"),
 					)
 					return lastRelevantIndex !== -1
-						? clineMessages[lastRelevantIndex]?.ask === "completion_result"
+						? clineMessages[lastRelevantIndex]?.ask === "completion_result" ||
+								clineMessages[lastRelevantIndex]?.ask === "end_turn"
 						: false
 				})()
 			: false

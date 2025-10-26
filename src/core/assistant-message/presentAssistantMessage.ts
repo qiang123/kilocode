@@ -43,6 +43,7 @@ import { experiments, EXPERIMENT_IDS } from "../../shared/experiments"
 import { applyDiffToolLegacy } from "../tools/applyDiffTool"
 import { yieldPromise } from "../kilocode"
 import { partial, result } from "lodash"
+import { endTurnTool } from "../tools/codebuff/endTurnTool"
 
 /**
  * Processes and presents assistant message content to the user interface.
@@ -449,8 +450,19 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 					// await checkpointSaveAndMark(cline) // kilocode_change
 					// await readFilesTool(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
 					break
-			}
-			switch (block.name) {
+				case "end_turn":
+					await endTurnTool(
+						cline,
+						block,
+						askApproval,
+						handleError,
+						pushToolResult,
+						removeClosingTag,
+						toolDescription,
+						askFinishSubTaskApproval,
+					)
+					break
+				// code
 				case "write_to_file":
 					// await checkpointSaveAndMark(cline) // kilocode_change
 					await writeToFileTool(cline, block, askApproval, handleError, pushToolResult, removeClosingTag)
@@ -577,24 +589,6 @@ export async function presentAssistantMessage(cline: Task, recursionDepth: numbe
 					await attemptCompletionTool(
 						cline,
 						block,
-						askApproval,
-						handleError,
-						pushToolResult,
-						removeClosingTag,
-						toolDescription,
-						askFinishSubTaskApproval,
-					)
-					break
-				case "end_turn":
-					const newBlock: AttemptCompletionToolUse = {
-						...block,
-						name: "attempt_completion",
-						partial: false,
-						params: { result: "!" },
-					}
-					await attemptCompletionTool(
-						cline,
-						newBlock,
 						askApproval,
 						handleError,
 						pushToolResult,

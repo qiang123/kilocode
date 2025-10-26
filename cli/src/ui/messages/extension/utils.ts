@@ -80,6 +80,7 @@ export function getMessageIcon(type: "ask" | "say", subtype?: string): string {
 			case "use_mcp_server":
 				return "⚙"
 			case "completion_result":
+			case "end_turn":
 				return "✓"
 			case "followup":
 				return "?"
@@ -103,6 +104,7 @@ export function getMessageIcon(type: "ask" | "say", subtype?: string): string {
 			case "diff_error":
 				return "⚠"
 			case "completion_result":
+			case "end_turn":
 				return "✓"
 			case "api_req_started":
 				return "⟳"
@@ -131,6 +133,7 @@ export function getMessageColor(type: "ask" | "say", subtype?: string): string {
 		case "diff_error":
 			return "red"
 		case "completion_result":
+		case "end_turn":
 			return "green"
 		case "api_req_started":
 			return "cyan"
